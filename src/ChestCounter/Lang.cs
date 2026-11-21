@@ -3,45 +3,68 @@ using System.Globalization;
 namespace ChestCounter;
 
 /// <summary>
-/// User interface language (French, English or Spanish), chosen on first launch and saved in config.json.
-/// Texts are written inline as <c>L.T("français", "English", "español")</c>. Names stored in data.json (chest kinds,
+/// User interface language (French, English, Spanish or Russian), chosen on first launch and saved in config.json.
+/// Texts are written inline as <c>L.T("français", "English", "español", "русский")</c>. Names stored in data.json (chest kinds,
 /// treasure items) are kept in French for compatibility and translated when displayed (<see cref="Name"/>).
 /// </summary>
 public static class L
 {
     /// <summary>Languages offered, in menu order.</summary>
-    public static readonly string[] Codes = { "fr", "en", "es" };
+    public static readonly string[] Codes = { "fr", "en", "es", "ru" };
 
-    /// <summary>"fr", "en" or "es".</summary>
+    /// <summary>"fr", "en", "es" or "ru".</summary>
     public static string Code { get; private set; } = "fr";
 
     public static bool En => Code == "en";
     public static bool Es => Code == "es";
+    public static bool Ru => Code == "ru";
 
     public static CultureInfo Culture { get; private set; } = CultureInfo.GetCultureInfo("fr-FR");
 
     public static void Set(string? code)
     {
         Code = Normalize(code) ?? "fr";
-        Culture = CultureInfo.GetCultureInfo(T("fr-FR", "en-GB", "es-ES"));
+        Culture = CultureInfo.GetCultureInfo(T("fr-FR", "en-GB", "es-ES", "ru-RU"));
     }
 
-    /// <summary>"fr", "en", "es" or null when the answer is not recognized.</summary>
+    /// <summary>"fr", "en", "es", "ru" or null when the answer is not recognized.</summary>
     public static string? Normalize(string? code) => code?.Trim().ToLowerInvariant() switch
     {
         "fr" or "fra" or "fre" or "french" or "français" or "francais" or "francés" or "frances" => "fr",
         "en" or "eng" or "english" or "anglais" or "inglés" or "ingles" => "en",
         "es" or "spa" or "spanish" or "español" or "espanol" or "espagnol" => "es",
+        "ru" or "rus" or "russian" or "русский" or "russe" or "ruso" => "ru",
         _ => null,
     };
 
     /// <summary>Name of a language in that language (menus).</summary>
-    public static string NativeName(string code) => code switch { "en" => "English", "es" => "Español", _ => "Français" };
+    public static string NativeName(string code) => code switch { "en" => "English", "es" => "Español", "ru" => "Русский", _ => "Français" };
 
     /// <summary>Language of Windows when it is one of ours, English otherwise.</summary>
     public static string SystemDefault => Normalize(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName) ?? "en";
 
-    public static string T(string fr, string en, string es) => Code switch { "en" => en, "es" => es, _ => fr };
+    /// <summary>The text in the current language; Russian falls back to English when not given.</summary>
+    public static string T(string fr, string en, string es, string? ru = null) => Code switch { "en" => en, "es" => es, "ru" => ru ?? en, _ => fr };
+
+    /// <summary>Russian plural form: 1 сундук, 2 сундука, 5 сундуков (also 21 сундук, 11 сундуков).</summary>
+    public static string RuPlural(int n, string one, string few, string many)
+    {
+        var a = Math.Abs(n) % 100;
+        var b = a % 10;
+        return a is >= 11 and <= 14 ? many : b == 1 ? one : b is >= 2 and <= 4 ? few : many;
+    }
+
+    /// <summary>"5 сундуков": number + Russian plural form.</summary>
+    public static string R(int n, string one, string few, string many) => $"{N(n)} {RuPlural(n, one, few, many)}";
+
+    // Russian forms of the words counted with Count, found by their English singular.
+    private static readonly Dictionary<string, (string One, string Few, string Many)> RuWords = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["chest"] = ("сундук", "сундука", "сундуков"),
+        ["match"] = ("матч", "матча", "матчей"),
+        ["treasure"] = ("сокровище", "сокровища", "сокровищ"),
+        ["replay analyzed"] = ("повтор проанализирован", "повтора проанализировано", "повторов проанализировано"),
+    };
 
     public static string N(int n) => n.ToString("N0", Culture);
 
@@ -51,6 +74,8 @@ public static class L
     /// <summary>French: singular for 0 and 1. English and Spanish: singular for 1 only.</summary>
     public static string Count(int n, string frOne, string frMany, string enOne, string enMany, string esOne, string esMany) => Code switch
     {
+        "ru" when RuWords.TryGetValue(enOne, out var w) => R(n, w.One, w.Few, w.Many),
+        "ru" => $"{N(n)} {(n == 1 ? enOne : enMany)}",
         "en" => $"{N(n)} {(n == 1 ? enOne : enMany)}",
         "es" => $"{N(n)} {(n == 1 ? esOne : esMany)}",
         _ => $"{N(n)} {(n > 1 ? frMany : frOne)}",
@@ -62,6 +87,10 @@ public static class L
         if (Es)
         {
             return $"{n}.º";
+        }
+        if (Ru)
+        {
+            return $"{n}-е";
         }
         if (!En)
         {
@@ -116,29 +145,29 @@ public static class L
     }
 
     /// <summary>Short date + time of a match ("05/11 22:54" / "5 Nov 10:54 PM"), of a moment already converted by <see cref="Shown"/>.</summary>
-    public static string DateTimeShort(DateTime shown) => shown.ToString((En ? "d MMM " : "dd/MM ") + TimePattern(), Culture) + Zone;
+    public static string DateTimeShort(DateTime shown) => shown.ToString((En ? "d MMM " : Ru ? "dd.MM " : "dd/MM ") + TimePattern(), Culture) + Zone;
 
-    // French names stored in data.json -> English / Spanish display names.
-    private static readonly Dictionary<string, (string En, string Es)> Names = new(StringComparer.OrdinalIgnoreCase)
+    // French names stored in data.json -> English / Spanish / Russian display names.
+    private static readonly Dictionary<string, (string En, string Es, string Ru)> Names = new(StringComparer.OrdinalIgnoreCase)
     {
-        ["Coffre"] = ("Chest", "Cofre"),
-        ["Coffre rare"] = ("Rare chest", "Cofre raro"),
-        ["Coffre enterré"] = ("Buried chest", "Cofre enterrado"),
-        ["Coffre d'esprit (rare)"] = ("Sprite chest (rare)", "Cofre de espíritu (raro)"),
-        ["Coffre des affiches d'esprit"] = ("Sprite poster chest", "Cofre de los carteles de espíritu"),
-        ["Autre coffre"] = ("Other chest", "Otro cofre"),
-        ["Canon à butin"] = ("Loot cannon", "Cañón de botín"),
-        ["Caisse de munitions"] = ("Ammo box", "Caja de munición"),
-        ["Caisse de nourriture"] = ("Food box", "Caja de comida"),
-        ["Autre conteneur"] = ("Other container", "Otro contenedor"),
-        ["Trésor"] = ("Treasure", "Tesoro"),
-        ["Trésor (type inconnu)"] = ("Treasure (unknown type)", "Tesoro (tipo desconocido)"),
-        ["Feu d'artifice doré"] = ("Golden firework", "Fuego artificial dorado"),
-        ["Extracteur portable"] = ("Portable extractor", "Extractor portátil"),
-        ["Localisateur d'esprit"] = ("Sprite locator", "Localizador de espíritus"),
-        ["Localisateur chanceux"] = ("Lucky locator", "Localizador de la suerte"),
-        ["Accélérateur d'extraction"] = ("Extraction accelerator", "Acelerador de extracción"),
-        ["inconnu"] = ("unknown", "desconocido"),
+        ["Coffre"] = ("Chest", "Cofre", "Сундук"),
+        ["Coffre rare"] = ("Rare chest", "Cofre raro", "Редкий сундук"),
+        ["Coffre enterré"] = ("Buried chest", "Cofre enterrado", "Закопанный сундук"),
+        ["Coffre d'esprit (rare)"] = ("Sprite chest (rare)", "Cofre de espíritu (raro)", "Сундук духа (редкий)"),
+        ["Coffre des affiches d'esprit"] = ("Sprite poster chest", "Cofre de los carteles de espíritu", "Сундук с плакатами духов"),
+        ["Autre coffre"] = ("Other chest", "Otro cofre", "Другой сундук"),
+        ["Canon à butin"] = ("Loot cannon", "Cañón de botín", "Пушка с добычей"),
+        ["Caisse de munitions"] = ("Ammo box", "Caja de munición", "Ящик с патронами"),
+        ["Caisse de nourriture"] = ("Food box", "Caja de comida", "Ящик с едой"),
+        ["Autre conteneur"] = ("Other container", "Otro contenedor", "Другой контейнер"),
+        ["Trésor"] = ("Treasure", "Tesoro", "Сокровище"),
+        ["Trésor (type inconnu)"] = ("Treasure (unknown type)", "Tesoro (tipo desconocido)", "Сокровище (тип неизвестен)"),
+        ["Feu d'artifice doré"] = ("Golden firework", "Fuego artificial dorado", "Золотой фейерверк"),
+        ["Extracteur portable"] = ("Portable extractor", "Extractor portátil", "Переносной экстрактор"),
+        ["Localisateur d'esprit"] = ("Sprite locator", "Localizador de espíritus", "Локатор духов"),
+        ["Localisateur chanceux"] = ("Lucky locator", "Localizador de la suerte", "Счастливый локатор"),
+        ["Accélérateur d'extraction"] = ("Extraction accelerator", "Acelerador de extracción", "Ускоритель добычи"),
+        ["inconnu"] = ("unknown", "desconocido", "неизвестно"),
     };
 
     /// <summary>Display name of a chest kind or treasure item stored in French.</summary>
@@ -153,6 +182,6 @@ public static class L
         {
             return stored ?? "";
         }
-        return En ? t.En : t.Es;
+        return En ? t.En : Ru ? t.Ru : t.Es;
     }
 }

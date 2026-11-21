@@ -1022,7 +1022,7 @@ public sealed class ReplayAnalyzer : FortniteReplayReader.ReplayReader
                 : null;
             seen.Add(new SeenPrize
             {
-                Player = who?.PlayerName ?? (who?.IsBot == true ? "Bot" : L.T("joueur inconnu", "unknown player", "jugador desconocido")),
+                Player = who?.PlayerName ?? (who?.IsBot == true ? "Bot" : L.T("joueur inconnu", "unknown player", "jugador desconocido", "неизвестный игрок")),
                 PrizeId = pz.PrizeId,
                 TimeSeconds = MathF.Round(pz.Time, 1),
             });
@@ -1228,7 +1228,7 @@ public static class TreasureNames
     /// A treasure received with no way to tell which one (no golden chest in sight, no item seen): a gizmo or a major
     /// treasure. Saved as the French name, shown in the chosen language.
     /// </summary>
-    public const string UnknownFr = "Trésor (type inconnu)", UnknownEn = "Treasure (unknown type)", UnknownEs = "Tesoro (tipo desconocido)";
+    public const string UnknownFr = "Trésor (type inconnu)", UnknownEn = "Treasure (unknown type)", UnknownEs = "Tesoro (tipo desconocido)", UnknownRu = "Сокровище (тип неизвестен)";
 
     /// <summary>Name saved by versions before 1.5 for the same thing ("Gizmo de trésor"): shown as the new one.</summary>
     private const string OldUnknownName = "Gizmo de trésor";
@@ -1260,7 +1260,7 @@ public static class TreasureNames
         }
         if (Guid.TryParse(item, out _))
         {
-            return L.T("Récompense de coffre doré", "Golden chest reward", "Recompensa de cofre dorado") + $" ({item[..8]})";
+            return L.T("Récompense de coffre doré", "Golden chest reward", "Recompensa de cofre dorado", "Награда из золотого сундука") + $" ({item[..8]})";
         }
         if (item.Contains(':'))
         {
@@ -1271,10 +1271,10 @@ public static class TreasureNames
             if (item.StartsWith(UnknownPrefix, StringComparison.OrdinalIgnoreCase) || item.StartsWith(OldUnknownPrefix, StringComparison.OrdinalIgnoreCase))
             {
                 // No golden chest seen and no item seen: which treasure it was is not in the replay.
-                return L.T(UnknownFr, UnknownEn, UnknownEs);
+                return L.T(UnknownFr, UnknownEn, UnknownEs, UnknownRu);
             }
             // A prize whose reward is not known yet: its id is shown, so that it can be named in a later version.
-            return L.T("Récompense de coffre doré", "Golden chest reward", "Recompensa de cofre dorado") + $" ({item[(item.IndexOf(':') + 1)..]})";
+            return L.T("Récompense de coffre doré", "Golden chest reward", "Recompensa de cofre dorado", "Награда из золотого сундука") + $" ({item[(item.IndexOf(':') + 1)..]})";
         }
 
         var i = item.ToLowerInvariant();

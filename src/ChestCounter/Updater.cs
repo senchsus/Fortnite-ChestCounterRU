@@ -15,7 +15,7 @@ public sealed record UpdateInfo(Version Version, string Tag, string AssetUrl, lo
 /// </summary>
 public static class ReleaseNotes
 {
-    private static readonly Dictionary<string, string> SectionTitle = new() { ["en"] = "English", ["fr"] = "Français", ["es"] = "Español" };
+    private static readonly Dictionary<string, string> SectionTitle = new() { ["en"] = "English", ["fr"] = "Français", ["es"] = "Español", ["ru"] = "Русский" };
 
     /// <summary>RELEASE_NOTES.md of this version, built into the exe (also the text of its GitHub release).</summary>
     public static string? Embedded { get; } = LoadEmbedded();
@@ -167,7 +167,7 @@ public static class Updater
         var exe = AppInfo.ExePath;
         if (exe == null)
         {
-            return L.T("mise à jour possible seulement depuis ChestCounter.exe", "update only possible from ChestCounter.exe", "actualización posible solo desde ChestCounter.exe");
+            return L.T("mise à jour possible seulement depuis ChestCounter.exe", "update only possible from ChestCounter.exe", "actualización posible solo desde ChestCounter.exe", "обновление возможно только из ChestCounter.exe");
         }
         var download = exe + ".download";
         var old = exe + ".old";
@@ -183,13 +183,13 @@ public static class Updater
             var info = new FileInfo(download);
             if (info.Length != update.Size)
             {
-                throw new IOException(L.T("téléchargement incomplet", "incomplete download", "descarga incompleta"));
+                throw new IOException(L.T("téléchargement incomplet", "incomplete download", "descarga incompleta", "загрузка не завершена"));
             }
             using (var fs = File.OpenRead(download))
             {
                 if (fs.ReadByte() != 'M' || fs.ReadByte() != 'Z')
                 {
-                    throw new IOException(L.T("le fichier téléchargé n'est pas un exe", "the downloaded file is not an exe", "el archivo descargado no es un exe"));
+                    throw new IOException(L.T("le fichier téléchargé n'est pas un exe", "the downloaded file is not an exe", "el archivo descargado no es un exe", "загруженный файл не является exe"));
                 }
                 if (update.Sha256 != null)
                 {
@@ -197,7 +197,7 @@ public static class Updater
                     var hash = Convert.ToHexString(SHA256.HashData(fs));
                     if (!hash.Equals(update.Sha256, StringComparison.OrdinalIgnoreCase))
                     {
-                        throw new IOException(L.T("empreinte SHA-256 incorrecte", "wrong SHA-256 checksum", "suma de comprobación SHA-256 incorrecta"));
+                        throw new IOException(L.T("empreinte SHA-256 incorrecte", "wrong SHA-256 checksum", "suma de comprobación SHA-256 incorrecta", "неверная контрольная сумма SHA-256"));
                     }
                 }
             }

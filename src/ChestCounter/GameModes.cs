@@ -40,15 +40,15 @@ public static class GameModes
         {
             return null;
         }
-        var mode = string.IsNullOrEmpty(m.Playlist) ? L.T("mode inconnu", "unknown mode", "modo desconocido") : m.Playlist;
+        var mode = string.IsNullOrEmpty(m.Playlist) ? L.T("mode inconnu", "unknown mode", "modo desconocido", "неизвестный режим") : m.Playlist;
         if (m.IsCustomMatch)
         {
-            return L.T($"partie personnalisée ({mode})", $"custom match ({mode})", $"partida personalizada ({mode})");
+            return L.T($"partie personnalisée ({mode})", $"custom match ({mode})", $"partida personalizada ({mode})", $"пользовательский матч ({mode})");
         }
         if (m.Map != null && !IsSeasonMap(m.Map))
         {
-            return L.T($"pas sur la carte de la saison ({mode}, carte {m.Map})", $"not on the season's map ({mode}, map {m.Map})", $"no es el mapa de la temporada ({mode}, mapa {m.Map})");
+            return L.T($"pas sur la carte de la saison ({mode}, carte {m.Map})", $"not on the season's map ({mode}, map {m.Map})", $"no es el mapa de la temporada ({mode}, mapa {m.Map})", $"не на карте сезона ({mode}, карта {m.Map})");
         }
-        return L.T($"pas le Battle Royale classique ({mode})", $"not the regular Battle Royale ({mode})", $"no es el Battle Royale normal ({mode})");
+        return L.T($"pas le Battle Royale classique ({mode})", $"not the regular Battle Royale ({mode})", $"no es el Battle Royale normal ({mode})", $"не обычная «Королевская битва» ({mode})");
     }
 }

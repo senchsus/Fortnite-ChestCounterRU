@@ -10,17 +10,17 @@ public static class Pretty
     {
         if (string.IsNullOrEmpty(playlist))
         {
-            return L.T("mode inconnu", "unknown mode", "modo desconocido");
+            return L.T("mode inconnu", "unknown mode", "modo desconocido", "неизвестный режим");
         }
 
         var p = playlist.ToLowerInvariant();
         var parts = new List<string>();
-        if (p.Contains("habanero") || p.Contains("ranked")) parts.Add(L.T("Classée", "Ranked", "Clasificatoria"));
-        if (p.Contains("nobuild")) parts.Add(L.T("Zéro construction", "Zero Build", "Cero construcción"));
-        if (p.Contains("solo")) parts.Add(L.T("Solo", "Solo", "Solitario"));
-        else if (p.Contains("duo")) parts.Add(L.T("Duo", "Duos", "Dúos"));
-        else if (p.Contains("trio")) parts.Add(L.T("Trio", "Trios", "Tríos"));
-        else if (p.Contains("squad")) parts.Add(L.T("Section", "Squads", "Escuadrones"));
+        if (p.Contains("habanero") || p.Contains("ranked")) parts.Add(L.T("Classée", "Ranked", "Clasificatoria", "Рейтинговый"));
+        if (p.Contains("nobuild")) parts.Add(L.T("Zéro construction", "Zero Build", "Cero construcción", "Без строительства"));
+        if (p.Contains("solo")) parts.Add(L.T("Solo", "Solo", "Solitario", "Соло"));
+        else if (p.Contains("duo")) parts.Add(L.T("Duo", "Duos", "Dúos", "Дуо"));
+        else if (p.Contains("trio")) parts.Add(L.T("Trio", "Trios", "Tríos", "Трио"));
+        else if (p.Contains("squad")) parts.Add(L.T("Section", "Squads", "Escuadrones", "Отряды"));
         return parts.Count > 0 ? string.Join(" · ", parts) : playlist.Replace("Playlist_", "");
     }
 
@@ -28,11 +28,11 @@ public static class Pretty
     {
         if (m.Placement is not int place || place <= 0)
         {
-            return L.T("place inconnue", "unknown placement", "puesto desconocido");
+            return L.T("place inconnue", "unknown placement", "puesto desconocido", "место неизвестно");
         }
         if (place == 1)
         {
-            return L.T("Top 1 !", "Victory Royale!", "¡Victoria magistral!");
+            return L.T("Top 1 !", "Victory Royale!", "¡Victoria magistral!", "Королевская победа!");
         }
         return m.TotalPlayers is int total && total > 0 ? $"{L.Ordinal(place)} / {total}" : L.Ordinal(place);
     }
@@ -48,13 +48,13 @@ public static class Pretty
     {
         if (f.ObtainedAtSeconds is not float t)
         {
-            return L.T("moment et source inconnus", "time and source unknown", "momento y origen desconocidos");
+            return L.T("moment et source inconnus", "time and source unknown", "momento y origen desconocidos", "время и источник неизвестны");
         }
-        var when = f.TimeExact ? $"{L.T("à", "at", "a los")} {Clock(t)}" : $"{L.T("vers", "around", "hacia los")} {Clock(t)}";
+        var when = f.TimeExact ? $"{L.T("à", "at", "a los", "в")} {Clock(t)}" : $"{L.T("vers", "around", "hacia los", "около")} {Clock(t)}";
         return f.SourceCertain ? $"{when} · {f.SourceLabel}" : $"{when} · {f.SourceLabel} ({Likely})";
     }
 
-    public static string Likely => L.T("probable", "likely", "probable");
+    public static string Likely => L.T("probable", "likely", "probable", "вероятно");
 
     public static string ItemName(string item)
     {
@@ -103,7 +103,7 @@ public static class ReportWriter
         }
         catch (Exception ex)
         {
-            Console.WriteLine(L.T($"Impossible d'écrire le rapport : {ex.Message}", $"Cannot write the report: {ex.Message}", $"No se puede escribir el informe: {ex.Message}"));
+            Console.WriteLine(L.T($"Impossible d'écrire le rapport : {ex.Message}", $"Cannot write the report: {ex.Message}", $"No se puede escribir el informe: {ex.Message}", $"Не удаётся записать отчёт: {ex.Message}"));
         }
     }
 
@@ -120,7 +120,7 @@ public static class ReportWriter
     private static DateTime When(MatchRecord m) => L.Shown(m.MatchStartUtc ?? m.AnalyzedAtUtc);
 
     /// <summary>A short date and time ("Nov 8, 6:00 AM"), shown in local time or UTC.</summary>
-    private static string ShortWhen(DateTime utc) => L.Shown(utc).ToString(L.T("d MMM ", "MMM d, ", "d MMM ") + L.TimePattern(), Fr) + L.Zone;
+    private static string ShortWhen(DateTime utc) => L.Shown(utc).ToString(L.T("d MMM ", "MMM d, ", "d MMM ", "d MMM, ") + L.TimePattern(), Fr) + L.Zone;
 
     // "Logbook" look (direction A): parchment cards on a night-sea background (a day version follows Windows' light
     // mode). Titles use the embedded Pirata One font; figures use Bahnschrift, installed with Windows.
@@ -415,11 +415,11 @@ public static class ReportWriter
         var every = treasures > 0 ? (int)Math.Round((double)totalChests / treasures) : 0;
 
         var sb = new StringBuilder();
-        var title = L.T("Compteur de coffres", "Chest Counter", "Contador de cofres");
+        var title = L.T("Compteur de coffres", "Chest Counter", "Contador de cofres", "Chest Counter");
         var updated = L.T(
             $"Mis à jour le {L.Shown(DateTime.UtcNow).ToString("dd/MM/yyyy", Fr)} à {L.Clock(L.Shown(DateTime.UtcNow), seconds: true)} · actualisation auto",
             $"Updated {L.Shown(DateTime.UtcNow).ToString("d MMM yyyy", Fr)} at {L.Clock(L.Shown(DateTime.UtcNow), seconds: true)} · auto refresh",
-            $"Actualizado el {L.Shown(DateTime.UtcNow).ToString("dd/MM/yyyy", Fr)} a las {L.Clock(L.Shown(DateTime.UtcNow), seconds: true)} · actualización automática");
+            $"Actualizado el {L.Shown(DateTime.UtcNow).ToString("dd/MM/yyyy", Fr)} a las {L.Clock(L.Shown(DateTime.UtcNow), seconds: true)} · actualización automática", $"Обновлено {L.Shown(DateTime.UtcNow).ToString("d MMM yyyy", Fr)} в {L.Clock(L.Shown(DateTime.UtcNow), seconds: true)} · автообновление");
         string Tile(string value, string label, string? sub = null) =>
             $"""<div class="tile"><div class="v num">{value}</div><div class="l">{label}</div>{(sub != null ? $"<div class=\"s\">{sub}</div>" : "")}</div>""";
 
@@ -432,16 +432,16 @@ public static class ReportWriter
             <span class="muted" style="font-size:13px">{updated}</span></header>
             {LoadingCard(progress)}{NoticeCards()}{ProfilesLine(profiles, player)}
             <section class="tiles{(teamChests > 0 ? " hassquad" : "")}">
-              <div class="tile hero"><button type="button" class="editbtn" id="editchests" title="{H(L.T("Modifier mon nombre de coffres", "Edit my number of chests", "Modificar mi número de cofres"))}" aria-label="{H(L.T("Modifier mon nombre de coffres", "Edit my number of chests", "Modificar mi número de cofres"))}">{PencilIcon}</button><div class="k">{L.T("Coffres au total", "Chests in total", "Cofres en total")}</div><div class="v num">{grandTotal.ToString("N0", Fr)}</div><div class="l">{L.T($"ouverts ou détruits par toi · {session.ToString("N0", Fr)} depuis le lancement", $"opened or destroyed by you · {session.ToString("N0", Fr)} since the tool started", $"abiertos o destruidos por ti · {session.ToString("N0", Fr)} desde que se abrió")}{(data.ManualAdjust != 0 ? "<br>" + L.T($"dont {data.ManualAdjust.ToString("+#,0;-#,0", Fr)} ajoutés à la main", $"{data.ManualAdjust.ToString("+#,0;-#,0", Fr)} of them added by hand", $"de ellos, {data.ManualAdjust.ToString("+#,0;-#,0", Fr)} añadidos a mano") : "")}</div></div>
-              {(teamChests > 0 ? Tile((grandTotal + teamChests).ToString("N0", Fr), L.T("total de l'équipe", "squad total", "total del equipo") + SquadInfo, L.T($"toi + {teamChests.ToString("N0", Fr)} par tes coéquipiers", $"you + {teamChests.ToString("N0", Fr)} by your teammates", $"tú + {teamChests.ToString("N0", Fr)} de tus compañeros")).Replace("<div class=\"tile\">", "<div class=\"tile squadtile\">") : "")}
-              {Tile(matches.Count.ToString("N0", Fr), L.T("parties analysées", "matches analyzed", "partidas analizadas"))}
-              {Tile(avg.ToString("0.0", Fr), L.T("coffres par partie", "chests per match", "cofres por partida"))}
-              {Tile(best.ToString("N0", Fr), L.T("record en une partie", "best match", "récord en una partida"))}
-              {Tile(treasures.ToString("N0", Fr), L.T("trésors trouvés", "treasures found", "tesoros encontrados"),
-                  (every > 0 ? L.T($"1 tous les {every.ToString("N0", Fr)} coffres", $"1 every {every.ToString("N0", Fr)} chests", $"1 cada {every.ToString("N0", Fr)} cofres") : null)
-                  + (teamTreasures > 0 ? (every > 0 ? "<br>" : "") + L.T($"+{teamTreasures} par l'équipe (estimation)", $"+{teamTreasures} by the team (estimate)", $"+{teamTreasures} del equipo (estimación)") : ""))}
+              <div class="tile hero"><button type="button" class="editbtn" id="editchests" title="{H(L.T("Modifier mon nombre de coffres", "Edit my number of chests", "Modificar mi número de cofres", "Изменить число моих сундуков"))}" aria-label="{H(L.T("Modifier mon nombre de coffres", "Edit my number of chests", "Modificar mi número de cofres", "Изменить число моих сундуков"))}">{PencilIcon}</button><div class="k">{L.T("Coffres au total", "Chests in total", "Cofres en total", "Всего сундуков")}</div><div class="v num">{grandTotal.ToString("N0", Fr)}</div><div class="l">{L.T($"ouverts ou détruits par toi · {session.ToString("N0", Fr)} depuis le lancement", $"opened or destroyed by you · {session.ToString("N0", Fr)} since the tool started", $"abiertos o destruidos por ti · {session.ToString("N0", Fr)} desde que se abrió", $"открыто или разбито тобой · {session.ToString("N0", Fr)} с запуска программы")}{(data.ManualAdjust != 0 ? "<br>" + L.T($"dont {data.ManualAdjust.ToString("+#,0;-#,0", Fr)} ajoutés à la main", $"{data.ManualAdjust.ToString("+#,0;-#,0", Fr)} of them added by hand", $"de ellos, {data.ManualAdjust.ToString("+#,0;-#,0", Fr)} añadidos a mano", $"из них {data.ManualAdjust.ToString("+#,0;-#,0", Fr)} добавлено вручную") : "")}</div></div>
+              {(teamChests > 0 ? Tile((grandTotal + teamChests).ToString("N0", Fr), L.T("total de l'équipe", "squad total", "total del equipo", "итог отряда") + SquadInfo, L.T($"toi + {teamChests.ToString("N0", Fr)} par tes coéquipiers", $"you + {teamChests.ToString("N0", Fr)} by your teammates", $"tú + {teamChests.ToString("N0", Fr)} de tus compañeros", $"ты + {teamChests.ToString("N0", Fr)} от тиммейтов")).Replace("<div class=\"tile\">", "<div class=\"tile squadtile\">") : "")}
+              {Tile(matches.Count.ToString("N0", Fr), L.T("parties analysées", "matches analyzed", "partidas analizadas", "матчей проанализировано"))}
+              {Tile(avg.ToString("0.0", Fr), L.T("coffres par partie", "chests per match", "cofres por partida", "сундуков за матч"))}
+              {Tile(best.ToString("N0", Fr), L.T("record en une partie", "best match", "récord en una partida", "лучший матч"))}
+              {Tile(treasures.ToString("N0", Fr), L.T("trésors trouvés", "treasures found", "tesoros encontrados", "сокровищ найдено"),
+                  (every > 0 ? L.T($"1 tous les {every.ToString("N0", Fr)} coffres", $"1 every {every.ToString("N0", Fr)} chests", $"1 cada {every.ToString("N0", Fr)} cofres", $"1 на каждые {every.ToString("N0", Fr)} сундуков") : null)
+                  + (teamTreasures > 0 ? (every > 0 ? "<br>" : "") + L.T($"+{teamTreasures} par l'équipe (estimation)", $"+{teamTreasures} by the team (estimate)", $"+{teamTreasures} del equipo (estimación)", $"+{teamTreasures} от команды (оценка)") : ""))}
             </section>
-            {(teamChests > 0 ? $"<div class=\"statsbar\">{Switch("showsquad", L.T("Afficher le total d'équipe", "Show the squad total", "Mostrar el total del equipo") + $" <span class=\"badge\">{L.T("imprécis", "inaccurate", "impreciso")}</span>")}</div>" : "")}
+            {(teamChests > 0 ? $"<div class=\"statsbar\">{Switch("showsquad", L.T("Afficher le total d'équipe", "Show the squad total", "Mostrar el total del equipo", "Показывать итог отряда") + $" <span class=\"badge\">{L.T("imprécis", "inaccurate", "impreciso", "неточно")}</span>")}</div>" : "")}
             """);
 
         // Last 30 days, one bar per day (the best day stands out).
@@ -449,20 +449,20 @@ public static class ReportWriter
         var days = Enumerable.Range(0, 30).Select(i => today.AddDays(i - 29)).ToList();
         var perDay = days.Select(d => matches.Where(m => When(m).Date == d).Sum(m => m.ChestsOpened)).ToList();
         var max = Math.Max(1, perDay.Max());
-        sb.Append($"<section><h2 class=\"pirate\">{L.T("Coffres par jour", "Chests per day", "Cofres por día")}</h2><div class=\"card chart\"><div class=\"bars\">");
+        sb.Append($"<section><h2 class=\"pirate\">{L.T("Coffres par jour", "Chests per day", "Cofres por día", "Сундуков в день")}</h2><div class=\"card chart\"><div class=\"bars\">");
         for (var i = 0; i < days.Count; i++)
         {
             var v = perDay[i];
             var h = (int)Math.Round(100.0 * v / max);
-            var tip = $"{days[i].ToString(L.T("ddd dd/MM", "ddd d MMM", "ddd dd/MM"), Fr)}{L.T(" : ", ": ", ": ")}{L.Count(v, "coffre", "chest", "cofre")}";
+            var tip = $"{days[i].ToString(L.T("ddd dd/MM", "ddd d MMM", "ddd dd/MM", "ddd d MMM"), Fr)}{L.T(" : ", ": ", ": ", ": ")}{L.Count(v, "coffre", "chest", "cofre")}";
             var cls = v == 0 ? " zero" : v == max ? " top" : "";
             sb.Append($"<div class=\"col\" aria-label=\"{H(tip)}\"><span class=\"tip\" style=\"bottom:calc({Math.Max(h, 3)}% + 6px)\">{H(tip)}</span><div class=\"bar{cls}\" style=\"height:{h}%\"></div></div>");
         }
         var bestDay = perDay[perDay.IndexOf(perDay.Max())];
         var bestDate = days[perDay.IndexOf(perDay.Max())];
-        sb.Append($"</div><div class=\"axis\"><span>{days[0].ToString(L.T("dd/MM", "d MMM", "dd/MM"), Fr)}</span>"
-            + (bestDay > 0 ? $"<span>{L.T("meilleur jour", "best day", "mejor día")} : {bestDate.ToString(L.T("dd/MM", "d MMM", "dd/MM"), Fr)} · {L.Count(bestDay, "coffre", "chest", "cofre")}</span>" : "")
-            + $"<span>{L.T("aujourd'hui", "today", "hoy")}</span></div></div></section>");
+        sb.Append($"</div><div class=\"axis\"><span>{days[0].ToString(L.T("dd/MM", "d MMM", "dd/MM", "d MMM"), Fr)}</span>"
+            + (bestDay > 0 ? $"<span>{L.T("meilleur jour", "best day", "mejor día", "лучший день")} : {bestDate.ToString(L.T("dd/MM", "d MMM", "dd/MM", "d MMM"), Fr)} · {L.Count(bestDay, "coffre", "chest", "cofre")}</span>" : "")
+            + $"<span>{L.T("aujourd'hui", "today", "hoy", "сегодня")}</span></div></div></section>");
 
         // By chest type (with the other interactions, not in the total) | where the player's treasures come from.
         var byKind = matches.SelectMany(m => m.Chests).GroupBy(c => ChestKinds.Canonical(c.Kind)).OrderByDescending(g => g.Count()).ToList();
@@ -476,7 +476,7 @@ public static class ReportWriter
             .Where(x => x.Count > 0)
             .OrderByDescending(x => x.Count)
             .ToList();
-        sb.Append($"<div class=\"two\"><section><h2 class=\"pirate\">{L.T("Par type de coffre", "By chest type", "Por tipo de cofre")}</h2><div class=\"card\"><table>");
+        sb.Append($"<div class=\"two\"><section><h2 class=\"pirate\">{L.T("Par type de coffre", "By chest type", "Por tipo de cofre", "По типу сундука")}</h2><div class=\"card\"><table>");
         foreach (var g in byKind)
         {
             var color = KindColor.GetValueOrDefault(g.Key, "#9a8f7a");
@@ -487,11 +487,11 @@ public static class ReportWriter
         var notes = new List<string>();
         if (destroyedTotal > 0)
         {
-            notes.Add(L.T($"dont {destroyedTotal.ToString("N0", Fr)} détruits (cassés au lieu d'être ouverts)", $"of which {destroyedTotal.ToString("N0", Fr)} destroyed (broken instead of opened)", $"de ellos, {destroyedTotal.ToString("N0", Fr)} destruidos (rotos en lugar de abiertos)"));
+            notes.Add(L.T($"dont {destroyedTotal.ToString("N0", Fr)} détruits (cassés au lieu d'être ouverts)", $"of which {destroyedTotal.ToString("N0", Fr)} destroyed (broken instead of opened)", $"de ellos, {destroyedTotal.ToString("N0", Fr)} destruidos (rotos en lugar de abiertos)", $"из них {destroyedTotal.ToString("N0", Fr)} разбито (сломано вместо открытия)"));
         }
         foreach (var (kind, count) in otherKinds)
         {
-            sb.Append($"<tr class=\"items\"><td>{H(L.Name(kind))} {L.T("(hors total)", "(not in the total)", "(fuera del total)")}</td><td></td><td class=\"n num\">{count.ToString("N0", Fr)}</td></tr>");
+            sb.Append($"<tr class=\"items\"><td>{H(L.Name(kind))} {L.T("(hors total)", "(not in the total)", "(fuera del total)", "(не входит в итог)")}</td><td></td><td class=\"n num\">{count.ToString("N0", Fr)}</td></tr>");
         }
         sb.Append("</table>");
         if (notes.Count > 0)
@@ -502,17 +502,17 @@ public static class ReportWriter
 
         var treasureRows = matches.SelectMany(m => m.TreasureFinds.Select(f => (m, f, Team: false))).ToList();
         var teamRows = matches.SelectMany(m => m.TeamTreasureFinds.Select(f => (m, f, Team: true))).ToList();
-        sb.Append($"<section><h2 class=\"pirate\">{L.T("D'où viennent tes trésors", "Where your treasures come from", "De dónde vienen tus tesoros")}</h2><div class=\"card\"><table>");
+        sb.Append($"<section><h2 class=\"pirate\">{L.T("D'où viennent tes trésors", "Where your treasures come from", "De dónde vienen tus tesoros", "Откуда твои сокровища")}</h2><div class=\"card\"><table>");
         if (treasureRows.Count == 0)
         {
-            sb.Append($"<tr><td class=\"items\">{L.T("Pas encore de trésor.", "No treasure yet.", "Todavía ningún tesoro.")}</td></tr>");
+            sb.Append($"<tr><td class=\"items\">{L.T("Pas encore de trésor.", "No treasure yet.", "Todavía ningún tesoro.", "Пока нет сокровищ.")}</td></tr>");
         }
         foreach (var g in treasureRows.GroupBy(r => r.f.SourceLabel).OrderByDescending(g => g.Count()))
         {
             var isChest = g.First().f.SourceIsChest;
             sb.Append(isChest
                 ? $"<tr><td>{H(g.Key)}</td><td class=\"n num big\">{g.Count()}</td></tr>"
-                : $"<tr class=\"unusual\"><td class=\"warn\">{H(g.Key)} <span style=\"font-size:12px\">· {L.T("fiabilité faible", "low reliability", "fiabilidad baja")}</span></td><td class=\"n num big warn\">{g.Count()}</td></tr>");
+                : $"<tr class=\"unusual\"><td class=\"warn\">{H(g.Key)} <span style=\"font-size:12px\">· {L.T("fiabilité faible", "low reliability", "fiabilidad baja", "низкая надёжность")}</span></td><td class=\"n num big warn\">{g.Count()}</td></tr>");
         }
         sb.Append("</table></div>");
         var unusual = treasureRows.Where(r => !r.f.SourceIsChest).ToList();
@@ -522,7 +522,7 @@ public static class ReportWriter
             sb.Append($"<div class=\"flag\">{FlagIcon}<span>" + L.T(
                 $"<b>{count} autrement qu'avec un coffre.</b> Fiabilité faible : il s'agit très probablement d'une erreur dans la façon dont les replays sont analysés.",
                 $"<b>{count} obtained other than from a chest.</b> Low reliability: most likely a mistake in the way the replays are analyzed.",
-                $"<b>{count} de otra forma que con un cofre.</b> Fiabilidad baja: muy probablemente un error en la forma de analizar las repeticiones.") + "</span></div>");
+                $"<b>{count} de otra forma que con un cofre.</b> Fiabilidad baja: muy probablemente un error en la forma de analizar las repeticiones.", $"<b>{count} получено не из сундука.</b> Низкая надёжность: скорее всего, это ошибка анализа повторов.") + "</span></div>");
         }
         sb.Append("</section></div>");
 
@@ -536,30 +536,30 @@ public static class ReportWriter
             var namesInfo = L.T(
                 "Pourquoi certains trésors ont un nom et d'autres non ? Un trésor majeur (tenue, pioche, piste, écran, véhicule, accès à la boutique pirate) sort d'un coffre doré qui porte son identifiant exact : il est nommé à coup sûr (★★), à condition que ce coffre soit dans ton replay, donc à moins d'environ 150 m de toi. Un gizmo est nommé quand il apparaît dans tes mains. Sinon le replay dit seulement qu'un trésor a été reçu, sans dire lequel : « Trésor (type inconnu) ». C'est toujours le cas pour un trésor trouvé par un coéquipier loin de toi.",
                 "Why do some treasures have a name and others not? A major treasure (outfit, pickaxe, track, loading screen, vehicle, Pirate Shop Access) comes out of a golden chest that carries its exact id: it is named for sure (★★), as long as that chest is in your replay, that is within about 150 m of you. A gizmo is named when it shows up in your hands. Otherwise the replay only says that a treasure was received, not which one: \"Treasure (unknown type)\". That is always the case for a treasure found by a teammate far from you.",
-                "¿Por qué unos tesoros tienen nombre y otros no? Un tesoro mayor (traje, pico, pista, pantalla de carga, vehículo, acceso a la tienda pirata) sale de un cofre dorado que lleva su identificador exacto: se nombra con seguridad (★★), siempre que ese cofre esté en tu repetición, es decir a menos de unos 150 m de ti. Un artilugio se nombra cuando aparece en tus manos. Si no, la repetición solo dice que se recibió un tesoro, no cuál: «Tesoro (tipo desconocido)». Siempre es el caso de un tesoro encontrado por un compañero lejos de ti.");
+                "¿Por qué unos tesoros tienen nombre y otros no? Un tesoro mayor (traje, pico, pista, pantalla de carga, vehículo, acceso a la tienda pirata) sale de un cofre dorado que lleva su identificador exacto: se nombra con seguridad (★★), siempre que ese cofre esté en tu repetición, es decir a menos de unos 150 m de ti. Un artilugio se nombra cuando aparece en tus manos. Si no, la repetición solo dice que se recibió un tesoro, no cuál: «Tesoro (tipo desconocido)». Siempre es el caso de un tesoro encontrado por un compañero lejos de ti.", "Почему у одних сокровищ есть название, а у других нет? Крупное сокровище (облик, кирка, трек, экран загрузки, транспорт, доступ в пиратскую лавку) выпадает из золотого сундука, который несёт его точный id: оно названо наверняка (★★), если этот сундук есть в твоём повторе, то есть примерно в пределах 150 м от тебя. Гаджет называется, когда появляется у тебя в руках. В остальных случаях повтор сообщает лишь, что сокровище получено, но не какое: «Сокровище (тип неизвестен)». Так всегда бывает с сокровищем, которое нашёл тиммейт далеко от тебя.");
             var teamSwitch = teamRows.Count > 0
-                ? Switch("showteam", L.T($"Afficher aussi l'équipe (+{teamRows.Count}, estimation)", $"Also show the team (+{teamRows.Count}, estimate)", $"Mostrar también el equipo (+{teamRows.Count}, estimación)"))
+                ? Switch("showteam", L.T($"Afficher aussi l'équipe (+{teamRows.Count}, estimation)", $"Also show the team (+{teamRows.Count}, estimate)", $"Mostrar también el equipo (+{teamRows.Count}, estimación)", $"Показать и команду (+{teamRows.Count}, оценка)"))
                 : "";
-            sb.Append(FoldStart("treasures", $"{L.T("Trésors trouvés", "Treasures found", "Tesoros encontrados")} · <span class=\"num\">{treasures}</span>", open: false, Info(namesInfo), teamSwitch));
-            sb.Append($"<div class=\"card\"><table id=\"t-treasures\"><tr><th>{L.T("Partie", "Match", "Partida")}</th><th>{L.T("Trésor", "Treasure", "Tesoro")}</th><th>{L.T("Obtenu à", "Obtained at", "Momento")}</th><th>{L.T("Source", "Source", "Origen")}</th><th>{L.T("Par", "By", "Por")}</th></tr>");
+            sb.Append(FoldStart("treasures", $"{L.T("Trésors trouvés", "Treasures found", "Tesoros encontrados", "Найденные сокровища")} · <span class=\"num\">{treasures}</span>", open: false, Info(namesInfo), teamSwitch));
+            sb.Append($"<div class=\"card\"><table id=\"t-treasures\"><tr><th>{L.T("Partie", "Match", "Partida", "Матч")}</th><th>{L.T("Trésor", "Treasure", "Tesoro", "Сокровище")}</th><th>{L.T("Obtenu à", "Obtained at", "Momento", "Получено")}</th><th>{L.T("Source", "Source", "Origen", "Источник")}</th><th>{L.T("Par", "By", "Por", "Кто")}</th></tr>");
             foreach (var (m, f, team) in treasureRows.Concat(teamRows).OrderByDescending(r => When(r.m)).ThenBy(r => r.f.ObtainedAtSeconds ?? 0))
             {
-                var when = f.ObtainedAtSeconds is float t ? (f.TimeExact ? Pretty.Clock(t) : $"{L.T("vers", "around", "hacia los")} {Pretty.Clock(t)}") : "?";
+                var when = f.ObtainedAtSeconds is float t ? (f.TimeExact ? Pretty.Clock(t) : $"{L.T("vers", "around", "hacia los", "около")} {Pretty.Clock(t)}") : "?";
                 string source;
                 if (team && string.IsNullOrEmpty(f.Teammate))
                 {
-                    source = $"<span class=\"items\">{L.T("coffre hors de ta vue", "chest out of your sight", "cofre fuera de tu vista")}</span>";
+                    source = $"<span class=\"items\">{L.T("coffre hors de ta vue", "chest out of your sight", "cofre fuera de tu vista", "сундук вне поля зрения")}</span>";
                 }
                 else if (!f.SourceIsChest)
                 {
-                    source = $"<span class=\"warn\">{H(f.SourceLabel)} · {L.T("fiabilité faible", "low reliability", "fiabilidad baja")}</span>";
+                    source = $"<span class=\"warn\">{H(f.SourceLabel)} · {L.T("fiabilité faible", "low reliability", "fiabilidad baja", "низкая надёжность")}</span>";
                 }
                 else
                 {
                     source = H(f.SourceLabel) + (f.SourceCertain ? "" : $" <span class=\"items\">({Pretty.Likely})</span>");
                 }
-                var who = !team ? L.T("toi", "you", "tú")
-                    : TeamIcon + (string.IsNullOrEmpty(f.Teammate) ? L.T("un coéquipier", "a teammate", "un compañero") : H(f.Teammate));
+                var who = !team ? L.T("toi", "you", "tú", "ты")
+                    : TeamIcon + (string.IsNullOrEmpty(f.Teammate) ? L.T("un coéquipier", "a teammate", "un compañero", "тиммейт") : H(f.Teammate));
                 var cls = team ? "r team" : f.SourceIsChest ? "r" : "r unusual";
                 var stars = f.FromGoldenChest ? "<span class=\"gold\">★★</span>" : "<span class=\"star\">★</span>";
                 sb.Append($"<tr class=\"{cls}\"><td class=\"nw num items\">{L.DateTimeShort(When(m))}</td><td>{stars} <b>{H(f.DisplayName)}</b></td><td class=\"nw num\">{when}</td><td>{source}</td><td class=\"by\">{who}</td></tr>");
@@ -568,8 +568,8 @@ public static class ReportWriter
         }
 
         // Latest matches.
-        sb.Append(FoldStart("matches", $"{L.T("Dernières parties", "Latest matches", "Últimas partidas")} · <span class=\"num\">{matches.Count.ToString("N0", Fr)}</span>", open: false));
-        sb.Append($"<div class=\"card\"><table id=\"t-matches\"><tr><th>{L.T("Date", "Date", "Fecha")}</th><th>{L.T("Mode", "Mode", "Modo")}</th><th>{L.T("Place", "Placement", "Puesto")}</th><th style=\"text-align:right\">{L.T("Coffres", "Chests", "Cofres")}</th>{(teamChests > 0 ? $"<th class=\"sq\" style=\"text-align:right\">{H(OverlayModel.SquadLabel)}</th>" : "")}<th>{L.T("Trésor", "Treasure", "Tesoro")}</th></tr>");
+        sb.Append(FoldStart("matches", $"{L.T("Dernières parties", "Latest matches", "Últimas partidas", "Последние матчи")} · <span class=\"num\">{matches.Count.ToString("N0", Fr)}</span>", open: false));
+        sb.Append($"<div class=\"card\"><table id=\"t-matches\"><tr><th>{L.T("Date", "Date", "Fecha", "Дата")}</th><th>{L.T("Mode", "Mode", "Modo", "Режим")}</th><th>{L.T("Place", "Placement", "Puesto", "Место")}</th><th style=\"text-align:right\">{L.T("Coffres", "Chests", "Cofres", "Сундуки")}</th>{(teamChests > 0 ? $"<th class=\"sq\" style=\"text-align:right\">{H(OverlayModel.SquadLabel)}</th>" : "")}<th>{L.T("Trésor", "Treasure", "Tesoro", "Сокровище")}</th></tr>");
         foreach (var m in matches)
         {
             var treasure = string.Join("<br>", m.TreasureFinds.Select(f => $"<span class=\"{(f.FromGoldenChest ? "gold" : "star")}\">{(f.FromGoldenChest ? "★★" : "★")} {H(f.DisplayName)}</span>"))
@@ -654,7 +654,7 @@ public static class ReportWriter
         sb.Append(L.T(
             "<footer>Compte les coffres que tu as ouverts ou détruits toi-même, d'après tes replays (« rediffusions » dans Fortnite), analysés après chaque partie. Les caisses de munitions et de nourriture ne sont pas comptées. ★★ = coffre doré de la chasse au trésor, détecté de façon certaine. ★ = trésor reçu grâce à un de tes coffres (moment exact), nommé quand l'objet est identifiable. L'icône équipe marque un trésor trouvé par un coéquipier (estimation : déduit des trésors que tu reçois sans avoir ouvert de coffre, car la chasse au trésor les partage avec toute l'équipe) ; il n'entre pas dans tes totaux. Le total de l'équipe ajoute aux tiens les coffres ouverts ou détruits par tes coéquipiers, comptés de la même façon dans tes replays ; un coffre ouvert à plus de 150 m de toi peut manquer, car le replay ne l'enregistre pas.</footer>",
             "<footer>Counts the chests you opened or destroyed yourself, from your replays, analyzed after each match. Ammo boxes and food boxes are not counted. ★★ = golden treasure hunt chest, detected for sure. ★ = treasure received from one of your own chests (exact moment), named when the item can be identified. The team icon marks a treasure found by a teammate (estimate: deduced from the treasures you receive without opening a chest, as the treasure hunt shares them with the whole team); it is not in your totals. The squad total adds the chests opened or destroyed by your teammates, counted the same way in your replays; a chest opened more than 150 m away from you can be missing, as the replay does not record it.</footer>",
-            "<footer>Cuenta los cofres que has abierto o destruido tú mismo, a partir de tus repeticiones, analizadas después de cada partida. Las cajas de munición y de comida no se cuentan. ★★ = cofre dorado de la búsqueda del tesoro, detectado con seguridad. ★ = tesoro recibido de uno de tus cofres (momento exacto), con nombre cuando el objeto se puede identificar. El icono de equipo marca un tesoro encontrado por un compañero (estimación: deducido de los tesoros que recibes sin abrir un cofre, ya que la búsqueda del tesoro los comparte con todo el equipo); no cuenta en tus totales. El total del equipo añade a los tuyos los cofres abiertos o destruidos por tus compañeros, contados igual en tus repeticiones; un cofre abierto a más de 150 m de ti puede faltar, porque la repetición no lo graba.</footer>"));
+            "<footer>Cuenta los cofres que has abierto o destruido tú mismo, a partir de tus repeticiones, analizadas después de cada partida. Las cajas de munición y de comida no se cuentan. ★★ = cofre dorado de la búsqueda del tesoro, detectado con seguridad. ★ = tesoro recibido de uno de tus cofres (momento exacto), con nombre cuando el objeto se puede identificar. El icono de equipo marca un tesoro encontrado por un compañero (estimación: deducido de los tesoros que recibes sin abrir un cofre, ya que la búsqueda del tesoro los comparte con todo el equipo); no cuenta en tus totales. El total del equipo añade a los tuyos los cofres abiertos o destruidos por tus compañeros, contados igual en tus repeticiones; un cofre abierto a más de 150 m de ti puede faltar, porque la repetición no lo graba.</footer>", "<footer>Считаются сундуки, которые ты сам открыл или разбил, по твоим повторам, анализируемым после каждого матча. Ящики с патронами и с едой не считаются. ★★ = золотой сундук охоты за сокровищами, обнаружен наверняка. ★ = сокровище из одного из твоих сундуков (точный момент), названо, если предмет удаётся опознать. Значок команды отмечает сокровище, найденное тиммейтом (оценка: выводится из сокровищ, которые ты получаешь, не открывая сундук, так как охота за сокровищами делит их на всю команду); в твои итоги оно не входит. Итог отряда добавляет сундуки, открытые или разбитые тиммейтами, посчитанные так же по твоим повторам; сундук, открытый дальше 150 м от тебя, может отсутствовать, так как повтор его не записывает.</footer>"));
         sb.Append(script).Append("</main></body></html>");
         return sb.ToString();
     }
@@ -677,7 +677,7 @@ public static class ReportWriter
 
     /// <summary>Folded table controls: the page shows the first rows, "show more" adds some, "show all" / "fold" (script).</summary>
     private static string Pager(string tableId) =>
-        $"""<div class="pager" data-for="{tableId}" data-step="10" hidden><span class="count" data-fmt="{H(L.T("{0} sur {1}", "{0} of {1}", "{0} de {1}"))}"></span><button type="button" class="more">{L.T("Afficher 20 de plus", "Show 20 more", "Mostrar 20 más")}</button><button type="button" class="all">{L.T("Tout afficher", "Show all", "Mostrar todo")}</button><button type="button" class="less" hidden>{L.T("Réduire", "Show less", "Reducir")}</button></div>""";
+        $"""<div class="pager" data-for="{tableId}" data-step="10" hidden><span class="count" data-fmt="{H(L.T("{0} sur {1}", "{0} of {1}", "{0} de {1}", "{0} из {1}"))}"></span><button type="button" class="more">{L.T("Afficher 20 de plus", "Show 20 more", "Mostrar 20 más", "Показать ещё 20")}</button><button type="button" class="all">{L.T("Tout afficher", "Show all", "Mostrar todo", "Показать все")}</button><button type="button" class="less" hidden>{L.T("Réduire", "Show less", "Reducir", "Свернуть")}</button></div>""";
 
     /// <summary>A small percentage with enough decimals to be meaningful (0.0064 %, 2.8 %, 63 %).</summary>
     private static string Percent(double p)
@@ -760,8 +760,8 @@ public static class ReportWriter
             var log = c.LogNever + pace * (end - now).TotalDays * double.LogP1(-1.0 / odds.OneIn);
             var p = PercentHtml(new Chance(-double.ExpM1(log), log, 0, 0));
             return weekly
-                ? L.T($"≈ {p} d'ici la fin de la semaine à ton rythme", $"≈ {p} by the end of the week at your pace", $"≈ {p} al final de la semana a tu ritmo")
-                : L.T($"≈ {p} d'ici la fin de la chasse à ton rythme", $"≈ {p} by the end of the hunt at your pace", $"≈ {p} al final de la búsqueda a tu ritmo");
+                ? L.T($"≈ {p} d'ici la fin de la semaine à ton rythme", $"≈ {p} by the end of the week at your pace", $"≈ {p} al final de la semana a tu ritmo", $"≈ {p} к концу недели в твоём темпе")
+                : L.T($"≈ {p} d'ici la fin de la chasse à ton rythme", $"≈ {p} by the end of the hunt at your pace", $"≈ {p} al final de la búsqueda a tu ritmo", $"≈ {p} к концу охоты в твоём темпе");
         }
 
         // Gizmos: treasures that did not come from a golden chest (the others are counted by the collection).
@@ -769,8 +769,8 @@ public static class ReportWriter
             .Where(t => t >= huntStart).OrderBy(t => t).ToList();
 
         string Tag(bool weekly) => weekly
-            ? $"<span class=\"tag weekly\">{L.T("Hebdo", "Weekly", "Semanal")}</span>"
-            : $"<span class=\"tag season\">{L.T("Saison", "Season", "Temporada")}</span>";
+            ? $"<span class=\"tag weekly\">{L.T("Hebdo", "Weekly", "Semanal", "Еженедельные")}</span>"
+            : $"<span class=\"tag season\">{L.T("Saison", "Season", "Temporada", "Сезонные")}</span>";
         string Chip(double p)
         {
             var (cls, text) = Verdict(p);
@@ -778,20 +778,20 @@ public static class ReportWriter
         }
         string Bar(double p) => $"<span class=\"cbar\"><i class=\"{Verdict(p).Cls}\" style=\"width:{Math.Clamp(p * 100, 0.8, 100).ToString("F1", CultureInfo.InvariantCulture)}%\"></i></span>";
         string Img(TreasurePrize? prize, string cls) => TreasureImages.Src(prize?.Image) is { } src ? $"<img class=\"{cls}\" src=\"{H(src)}\" alt=\"\" onerror=\"this.style.visibility='hidden'\">" : "";
-        string OneIn(int n) => L.T($"1 sur {n.ToString("N0", Fr)}", $"1 in {n.ToString("N0", Fr)}", $"1 entre {n.ToString("N0", Fr)}");
+        string OneIn(int n) => L.T($"1 sur {n.ToString("N0", Fr)}", $"1 in {n.ToString("N0", Fr)}", $"1 entre {n.ToString("N0", Fr)}", $"1 из {n.ToString("N0", Fr)}");
         string N(int n) => n.ToString("N0", Fr);
-        string GotBadge() => $"<span class=\"gotbadge\">✓ {L.T("Obtenu", "Got it", "Conseguido")}</span>";
+        string GotBadge() => $"<span class=\"gotbadge\">✓ {L.T("Obtenu", "Got it", "Conseguido", "Понятно")}</span>";
 
         var info = L.T(
             "La chance que chaque trésor soit déjà tombé pour toi au moins une fois. Détails : « Comment c'est calculé ? » en bas.",
             "The chance each treasure has already dropped for you at least once. Details: \"How is this calculated?\" at the bottom.",
-            "La probabilidad de que cada tesoro ya te haya tocado al menos una vez. Detalles: «¿Cómo se calcula?» abajo.");
-        sb.Append(FoldStart("chances", L.T("Tes chances", "Your chances", "Tus probabilidades"), open: true, Info(info)));
+            "La probabilidad de que cada tesoro ya te haya tocado al menos una vez. Detalles: «¿Cómo se calcula?» abajo.", "Шанс, что каждое сокровище уже выпало тебе хотя бы раз. Подробнее: «Как это считается?» внизу.");
+        sb.Append(FoldStart("chances", L.T("Tes chances", "Your chances", "Tus probabilidades", "Твои шансы"), open: true, Info(info)));
         sb.Append(TreasureHourBanner());
         sb.Append($"<p class=\"ch-intro\">{L.T(
             "Chaque coffre est un nouveau tirage : tes chances ne s'accumulent pas. Ces chiffres montrent la chance qu'un trésor soit <b>déjà tombé pour toi au moins une fois</b>, avec les coffres que tu as ouverts.",
             "Every chest is a fresh roll: your odds don't build up. These numbers show the chance a treasure has <b>already dropped for you at least once</b>, from the chests you've opened.",
-            "Cada cofre es una tirada nueva: tus probabilidades no se acumulan. Estas cifras muestran la probabilidad de que un tesoro <b>ya te haya tocado al menos una vez</b>, con los cofres que has abierto.")}</p>");
+            "Cada cofre es una tirada nueva: tus probabilidades no se acumulan. Estas cifras muestran la probabilidad de que un tesoro <b>ya te haya tocado al menos una vez</b>, con los cofres que has abierto.", "Каждый сундук — новый бросок: шансы не накапливаются. Эти числа показывают вероятность, что сокровище <b>уже выпало тебе хотя бы раз</b>, исходя из открытых тобой сундуков.")}</p>");
 
         // ---- The two rarest: the gold outfit of the week and Pirate Shop Access (all season).
         string Card(string kind)
@@ -801,29 +801,29 @@ public static class ReportWriter
             var c = Shown(odds);
             var prize = weekly ? PrizeOf(kind) : TreasureCatalog.PirateShopAccess;
             var items = prize?.Id ?? "";
-            var name = weekly ? prize?.Name ?? TreasureCatalog.KindName(kind) : L.T("Toute la saison", "Lasts all season", "Toda la temporada");
-            var about = c.P > 0 && c.P < 0.5 ? " · " + L.T($"environ 1 sur {N((int)Math.Round(1 / c.P))}", $"about 1 in {N((int)Math.Round(1 / c.P))}", $"aproximadamente 1 entre {N((int)Math.Round(1 / c.P))}") : "";
+            var name = weekly ? prize?.Name ?? TreasureCatalog.KindName(kind) : L.T("Toute la saison", "Lasts all season", "Toda la temporada", "Действует весь сезон");
+            var about = c.P > 0 && c.P < 0.5 ? " · " + L.T($"environ 1 sur {N((int)Math.Round(1 / c.P))}", $"about 1 in {N((int)Math.Round(1 / c.P))}", $"aproximadamente 1 entre {N((int)Math.Round(1 / c.P))}", $"примерно 1 из {N((int)Math.Round(1 / c.P))}") : "";
             var scope = weekly
-                ? L.T("chance qu'il soit tombé pour toi cette semaine", "chance it dropped for you this week", "probabilidad de que te haya tocado esta semana")
-                : L.T("chance qu'il soit tombé pour toi cette saison", "chance it dropped for you this season", "probabilidad de que te haya tocado esta temporada");
+                ? L.T("chance qu'il soit tombé pour toi cette semaine", "chance it dropped for you this week", "probabilidad de que te haya tocado esta semana", "шанс, что оно выпало тебе на этой неделе")
+                : L.T("chance qu'il soit tombé pour toi cette saison", "chance it dropped for you this season", "probabilidad de que te haya tocado esta temporada", "шанс, что оно выпало тебе в этом сезоне");
             var line = L.T($"Chaque coffre : {OneIn(odds.OneIn)} · {N(c.Chests)} coffres {(weekly ? "cette semaine" : "cette saison")}",
                 $"Each chest: {OneIn(odds.OneIn)} · {N(c.Chests)} chests {(weekly ? "this week" : "this season")}",
-                $"Cada cofre: {OneIn(odds.OneIn)} · {N(c.Chests)} cofres {(weekly ? "esta semana" : "esta temporada")}");
+                $"Cada cofre: {OneIn(odds.OneIn)} · {N(c.Chests)} cofres {(weekly ? "esta semana" : "esta temporada")}", $"Каждый сундук: {OneIn(odds.OneIn)} · сундуков {(weekly ? "на этой неделе" : "в этом сезоне")}: {N(c.Chests)}");
             var extra = new StringBuilder();
             if (weekly)
             {
                 var s = Season(odds);
-                extra.Append($"<div class=\"cfoot\">{L.T($"Toutes les semaines réunies : <b>{PercentHtml(s)}</b> sur {N(s.Chests)} coffres", $"All weeks combined: <b>{PercentHtml(s)}</b> over {N(s.Chests)} chests", $"Todas las semanas juntas: <b>{PercentHtml(s)}</b> en {N(s.Chests)} cofres")}</div>");
+                extra.Append($"<div class=\"cfoot\">{L.T($"Toutes les semaines réunies : <b>{PercentHtml(s)}</b> sur {N(s.Chests)} coffres", $"All weeks combined: <b>{PercentHtml(s)}</b> over {N(s.Chests)} chests", $"Todas las semanas juntas: <b>{PercentHtml(s)}</b> en {N(s.Chests)} cofres", $"Все недели вместе: <b>{PercentHtml(s)}</b> на {N(s.Chests)} сундуков")}</div>");
                 if (week != null && now < week.To)
                 {
-                    extra.Append($"<div class=\"cfoot\">{L.T("Cette tenue part dans", "This outfit leaves in", "Este traje se va en")} <b>{Countdown(week.To)}</b></div>");
+                    extra.Append($"<div class=\"cfoot\">{L.T("Cette tenue part dans", "This outfit leaves in", "Este traje se va en", "Этот облик уйдёт через")} <b>{Countdown(week.To)}</b></div>");
                 }
             }
             else
             {
                 var half = TreasureCatalog.ChestsFor(odds.OneIn, 0.5);
                 var progress = Math.Clamp(c.Chests * 100.0 / half, 0.8, 100).ToString("F1", CultureInfo.InvariantCulture);
-                extra.Append($"<div class=\"halfway\"><div class=\"hrow\"><span>{L.T("Vers une chance sur deux", "Halfway to a 50/50 chance", "Hacia una probabilidad del 50 %")}</span><span><b>{N(c.Chests)}</b> / {N((int)Math.Min(int.MaxValue, half))} {L.T("coffres", "chests", "cofres")}</span></div><span class=\"cbar wide\"><i class=\"gold\" style=\"width:{progress}%\"></i></span></div>");
+                extra.Append($"<div class=\"halfway\"><div class=\"hrow\"><span>{L.T("Vers une chance sur deux", "Halfway to a 50/50 chance", "Hacia una probabilidad del 50 %", "На полпути к шансу 50/50")}</span><span><b>{N(c.Chests)}</b> / {N((int)Math.Min(int.MaxValue, half))} {L.T("coffres", "chests", "cofres", "сундуков")}</span></div><span class=\"cbar wide\"><i class=\"gold\" style=\"width:{progress}%\"></i></span></div>");
             }
             var projection = Projection(odds, c, weekly);
             if (projection.Length > 0)
@@ -844,7 +844,7 @@ public static class ReportWriter
         sb.Append("</div>");
 
         // ---- Tables: the weekly treasures (this week's items), then the season ones. Same columns, same widths.
-        var head = $"<tr><th>{L.T("Trésor", "Treasure", "Tesoro")}</th><th class=\"r\">{L.T("Chaque coffre", "Each chest", "Cada cofre")}</th><th>{L.T("Chance de l'avoir eu", "Chance you've had it", "Probabilidad de tenerlo")}</th><th class=\"r\">{L.T("Attendu", "Expected", "Esperado")}</th></tr>";
+        var head = $"<tr><th>{L.T("Trésor", "Treasure", "Tesoro", "Сокровище")}</th><th class=\"r\">{L.T("Chaque coffre", "Each chest", "Cada cofre", "Каждый сундук")}</th><th>{L.T("Chance de l'avoir eu", "Chance you've had it", "Probabilidad de tenerlo", "Шанс, что он у тебя есть")}</th><th class=\"r\">{L.T("Attendu", "Expected", "Esperado", "Ожидается")}</th></tr>";
         string Row(TreasureOdds odds, string note)
         {
             var c = Shown(odds);
@@ -852,16 +852,16 @@ public static class ReportWriter
             var name = prize != null ? $"<span class=\"iname\">{H(prize.Name)}</span>" : "";
             var projection = odds.Weekly ? Projection(odds, c, weekly: true) : "";
             var below = string.Join("", new[] { note, projection }.Where(x => x.Length > 0).Select(x => $"<span class=\"iname\">{x}</span>"));
-            return $"<tr data-kind=\"{odds.Kind}\"{(prize != null ? $" data-items=\"{prize.Id}\"" : "")}><td><div class=\"tflex\">{Img(prize, "thumb")}<div><div class=\"tk\">{H(TreasureCatalog.KindName(odds.Kind))}<span class=\"boost\" hidden></span>{GotBadge()}</div>{name}<span class=\"iname mo\">{OneIn(odds.OneIn)} {L.T("par coffre", "each chest", "por cofre")}</span>{below}</div></div></td>"
+            return $"<tr data-kind=\"{odds.Kind}\"{(prize != null ? $" data-items=\"{prize.Id}\"" : "")}><td><div class=\"tflex\">{Img(prize, "thumb")}<div><div class=\"tk\">{H(TreasureCatalog.KindName(odds.Kind))}<span class=\"boost\" hidden></span>{GotBadge()}</div>{name}<span class=\"iname mo\">{OneIn(odds.OneIn)} {L.T("par coffre", "each chest", "por cofre", "каждый сундук")}</span>{below}</div></div></td>"
                 + $"<td class=\"n pc\">{OneIn(odds.OneIn)}</td><td class=\"tchance\"><div class=\"tcv\">{Chip(c.P)}<b>{PercentHtml(c)}</b></div>{Bar(c.P)}</td><td class=\"n\">{Expected(c.Average)}</td></tr>";
         }
 
         if (week != null)
         {
             var leaves = now < week.To
-                ? $" · {L.T("part", "leaves", "se va")} {TimeEl(week.To, "dayTime")}</div></div><div class=\"cdbox\"><span class=\"cdl\">{L.T("Part dans", "Leaves in", "Se va en")}</span>{Countdown(week.To)}</div></div>"
+                ? $" · {L.T("part", "leaves", "se va", "уходит")} {TimeEl(week.To, "dayTime")}</div></div><div class=\"cdbox\"><span class=\"cdl\">{L.T("Part dans", "Leaves in", "Se va en", "Уходит через")}</span>{Countdown(week.To)}</div></div>"
                 : "</div></div></div>";
-            sb.Append($"<div class=\"cgroup\"><div class=\"ghead\">{Tag(true)}<div><div class=\"gt\">{L.T("Semaine", "Week", "Semana")} {week.Number} · {H(week.Title)}</div><div class=\"gs\"><b>{L.Count(weekChests, "coffre", "coffres", "chest", "chests", "cofre", "cofres")}</b> {L.T("cette semaine", "this week", "esta semana")}{(weekManual > 0 ? L.T($", dont {N(weekManual)} ajoutés à la main", $", including {N(weekManual)} added by hand", $", incluidos {N(weekManual)} añadidos a mano") : "")}{leaves}");
+            sb.Append($"<div class=\"cgroup\"><div class=\"ghead\">{Tag(true)}<div><div class=\"gt\">{L.T("Semaine", "Week", "Semana", "Неделя")} {week.Number} · {H(week.Title)}</div><div class=\"gs\"><b>{L.Count(weekChests, "coffre", "coffres", "chest", "chests", "cofre", "cofres")}</b> {L.T("cette semaine", "this week", "esta semana", "на этой неделе")}{(weekManual > 0 ? L.T($", dont {N(weekManual)} ajoutés à la main", $", including {N(weekManual)} added by hand", $", incluidos {N(weekManual)} añadidos a mano", $", из них {N(weekManual)} добавлено вручную") : "")}{leaves}");
             sb.Append($"<div class=\"card tcard\"><table class=\"ctable\">{head}");
             foreach (var odds in TreasureCatalog.Odds.Where(o => o.Weekly && o.Kind != TreasureCatalog.GoldOutfit))
             {
@@ -870,8 +870,8 @@ public static class ReportWriter
             sb.Append("</table></div></div>");
         }
 
-        var byHand = manual > 0 ? L.T($", dont {N(manual)} ajoutés à la main", $", including {N(manual)} added by hand", $", incluidos {N(manual)} añadidos a mano") : "";
-        sb.Append($"<div class=\"cgroup\"><div class=\"ghead\">{Tag(false)}<div><div class=\"gt\">{L.T("Toute la saison", "All season", "Toda la temporada")}</div><div class=\"gs\"><b>{L.Count(seasonChests, "coffre", "coffres", "chest", "chests", "cofre", "cofres")}</b> {L.T("depuis le début de la chasse", "since the hunt started", "desde el inicio de la búsqueda")} ({TimeEl(huntStart, "date")}){byHand}</div></div></div>");
+        var byHand = manual > 0 ? L.T($", dont {N(manual)} ajoutés à la main", $", including {N(manual)} added by hand", $", incluidos {N(manual)} añadidos a mano", $", из них {N(manual)} добавлено вручную") : "";
+        sb.Append($"<div class=\"cgroup\"><div class=\"ghead\">{Tag(false)}<div><div class=\"gt\">{L.T("Toute la saison", "All season", "Toda la temporada", "Весь сезон")}</div><div class=\"gs\"><b>{L.Count(seasonChests, "coffre", "coffres", "chest", "chests", "cofre", "cofres")}</b> {L.T("depuis le début de la chasse", "since the hunt started", "desde el inicio de la búsqueda", "с начала охоты")} ({TimeEl(huntStart, "date")}){byHand}</div></div></div>");
         sb.Append($"<div class=\"card tcard\"><table class=\"ctable\">{head}");
         foreach (var odds in TreasureCatalog.Odds.Where(o => !o.Weekly && o.Kind != TreasureCatalog.PirateShop))
         {
@@ -881,16 +881,16 @@ public static class ReportWriter
                 var since = huntTimes.Count(t => t > gizmoTimes[^1]);
                 note = L.T($"Tu en as trouvé {N(gizmoTimes.Count)} · le dernier il y a {L.Count(since, "coffre", "coffres", "", "", "", "")}",
                     $"You found {N(gizmoTimes.Count)} · last one {L.Count(since, "", "", "chest", "chests", "", "")} ago",
-                    $"Has encontrado {N(gizmoTimes.Count)} · el último hace {L.Count(since, "", "", "", "", "cofre", "cofres")}");
+                    $"Has encontrado {N(gizmoTimes.Count)} · el último hace {L.Count(since, "", "", "", "", "cofre", "cofres")}", $"Ты нашёл {N(gizmoTimes.Count)} · последний — {L.Count(since, "", "", "chest", "chests", "", "")} назад");
             }
             sb.Append(Row(odds, note));
         }
         sb.Append("</table></div></div>");
 
         // ---- Folded: the weekly treasures over the whole season, and how it is computed.
-        sb.Append($"<details class=\"cmore\"><summary>{L.T("Trésors hebdo, toutes les semaines réunies", "Weekly treasures, all weeks combined", "Tesoros semanales, todas las semanas juntas")}</summary>");
-        sb.Append($"<p>{L.T($"La chance d'en avoir eu au moins un, de <i>n'importe quelle</i> semaine, sur les {N(seasonChests)} coffres de la chasse.", $"The chance you've had at least one of them from <i>any</i> week, over all {N(seasonChests)} chests of the hunt.", $"La probabilidad de haber conseguido al menos uno, de <i>cualquier</i> semana, en los {N(seasonChests)} cofres de la búsqueda.")}</p>");
-        sb.Append($"<div class=\"card tcard\"><table class=\"ctable mini\"><tr><th>{L.T("Trésor", "Treasure", "Tesoro")}</th><th class=\"r\">{L.T("Chance", "Chance", "Probabilidad")}</th><th class=\"r\">{L.T("Attendu", "Expected", "Esperado")}</th></tr>");
+        sb.Append($"<details class=\"cmore\"><summary>{L.T("Trésors hebdo, toutes les semaines réunies", "Weekly treasures, all weeks combined", "Tesoros semanales, todas las semanas juntas", "Еженедельные сокровища, все недели вместе")}</summary>");
+        sb.Append($"<p>{L.T($"La chance d'en avoir eu au moins un, de <i>n'importe quelle</i> semaine, sur les {N(seasonChests)} coffres de la chasse.", $"The chance you've had at least one of them from <i>any</i> week, over all {N(seasonChests)} chests of the hunt.", $"La probabilidad de haber conseguido al menos uno, de <i>cualquier</i> semana, en los {N(seasonChests)} cofres de la búsqueda.", $"Шанс, что у тебя есть хотя бы одно из них за <i>любую</i> неделю, по всем {N(seasonChests)} сундукам охоты.")}</p>");
+        sb.Append($"<div class=\"card tcard\"><table class=\"ctable mini\"><tr><th>{L.T("Trésor", "Treasure", "Tesoro", "Сокровище")}</th><th class=\"r\">{L.T("Chance", "Chance", "Probabilidad", "Шанс")}</th><th class=\"r\">{L.T("Attendu", "Expected", "Esperado", "Ожидается")}</th></tr>");
         foreach (var odds in TreasureCatalog.Odds.Where(o => o.Weekly))
         {
             var s = Season(odds);
@@ -900,14 +900,14 @@ public static class ReportWriter
 
         var hours = NextRegularHours(now);
         var hoursText = hours.Count > 0
-            ? L.T($" Elles ont lieu chaque {string.Join(" et ", hours.Select(h => TimeEl(h, "weekdayTime")))}, pendant 2 heures.", $" They run every {string.Join(" and ", hours.Select(h => TimeEl(h, "weekdayTime")))}, for 2 hours.", $" Son cada {string.Join(" y ", hours.Select(h => TimeEl(h, "weekdayTime")))}, durante 2 horas.")
+            ? L.T($" Elles ont lieu chaque {string.Join(" et ", hours.Select(h => TimeEl(h, "weekdayTime")))}, pendant 2 heures.", $" They run every {string.Join(" and ", hours.Select(h => TimeEl(h, "weekdayTime")))}, for 2 hours.", $" Son cada {string.Join(" y ", hours.Select(h => TimeEl(h, "weekdayTime")))}, durante 2 horas.", $" Они проходят каждый {string.Join(" и ", hours.Select(h => TimeEl(h, "weekdayTime")))}, по 2 часа.")
             : "";
         string Link(string url, string text) => $"<a href=\"{H(url)}\" target=\"_blank\" rel=\"noopener\">{H(text)}</a>";
-        sb.Append($"<details class=\"cmore\"><summary>{L.T("Comment c'est calculé ?", "How is this calculated?", "¿Cómo se calcula?")}</summary><ul>");
+        sb.Append($"<details class=\"cmore\"><summary>{L.T("Comment c'est calculé ?", "How is this calculated?", "¿Cómo se calcula?", "Как это считается?")}</summary><ul>");
         sb.Append(L.T(
             $"<li><b>Chaque coffre est indépendant.</b> Un écran de chargement, c'est {OneIn(Odds(TreasureCatalog.LoadingScreen).OneIn)} à chaque coffre, peu importe combien tu en as ouvert.</li><li><b>Chance de l'avoir eu</b> = 1 − (1 − 1/X)<sup>coffres</sup>. Elle se rapproche de 100 % sans jamais l'atteindre.</li><li><b>Hebdo</b> : ces trésors changent chaque dimanche, et un coffre ne donne que celui de sa semaine : seuls les coffres de cette semaine comptent.</li><li><b>Saison</b> : l'accès à la boutique pirate et les gizmos comptent tous les coffres depuis le début de la chasse, y compris ceux ajoutés à la main. Ceux-là n'ont pas de date : ils ne comptent pour une semaine que si tu as coché « Ouverts cette semaine ».</li><li><b>Heures du trésor</b> : certaines chances sont multipliées (par exemple ×10 pour les véhicules).{hoursText} Les coffres ouverts pendant l'une d'elles comptent avec les chances augmentées ({N(boosted)} des tiens).</li><li><b>Attendu</b> : combien tu en aurais en moyenne avec ces coffres. <b>À ton rythme</b> : la même chance à la fin de la semaine (ou de la chasse) si tu continues à ouvrir autant de coffres par jour.</li><li>Cotes publiées par {Link(TreasureCatalog.OddsSource, "Epic Games (Fortnite Status)")}, horaires des heures du trésor d'après {Link(TreasureCatalog.HoursSource, "fortnite.bot")}.</li>",
             $"<li><b>Each chest is independent.</b> A loading screen is {OneIn(Odds(TreasureCatalog.LoadingScreen).OneIn)} on every chest, no matter how many you've opened.</li><li><b>Chance you've had it</b> = 1 − (1 − 1/X)<sup>chests</sup>. It gets close to 100% but never reaches it.</li><li><b>Weekly</b> treasures change every Sunday, and a chest only gives that week's one, so only this week's chests count.</li><li><b>Season</b> treasures (Pirate Shop Access, gizmos) count every chest since the hunt started, including the ones you added by hand. Those have no date, so they count toward a week only if you ticked \"Opened this week\".</li><li><b>Treasure Hours</b> boost some odds (for example ×10 for vehicles).{hoursText} Chests opened during one count with the boosted odds ({N(boosted)} of yours).</li><li><b>Expected</b> is how many you'd get on average with these chests. <b>At your pace</b> is the same chance at the end of the week (or of the hunt) if you keep opening as many chests a day.</li><li>Odds published by {Link(TreasureCatalog.OddsSource, "Epic Games (Fortnite Status)")}, Treasure Hour times from {Link(TreasureCatalog.HoursSource, "fortnite.bot")}.</li>",
-            $"<li><b>Cada cofre es independiente.</b> Una pantalla de carga es {OneIn(Odds(TreasureCatalog.LoadingScreen).OneIn)} en cada cofre, sin importar cuántos hayas abierto.</li><li><b>Probabilidad de tenerlo</b> = 1 − (1 − 1/X)<sup>cofres</sup>. Se acerca al 100 % sin llegar nunca.</li><li><b>Semanal</b>: estos tesoros cambian cada domingo y un cofre solo da el de su semana, así que solo cuentan los cofres de esta semana.</li><li><b>Temporada</b>: el acceso a la tienda pirata y los artilugios cuentan todos los cofres desde el inicio de la búsqueda, incluidos los añadidos a mano. Esos no tienen fecha: solo cuentan para una semana si marcaste «Abiertos esta semana».</li><li><b>Horas del tesoro</b>: algunas probabilidades se multiplican (por ejemplo ×10 para los vehículos).{hoursText} Los cofres abiertos durante una de ellas cuentan con la probabilidad aumentada ({N(boosted)} de los tuyos).</li><li><b>Esperado</b>: cuántos tendrías de media con esos cofres. <b>A tu ritmo</b>: la misma probabilidad al final de la semana (o de la búsqueda) si sigues abriendo tantos cofres al día.</li><li>Probabilidades publicadas por {Link(TreasureCatalog.OddsSource, "Epic Games (Fortnite Status)")}, horarios de las horas del tesoro según {Link(TreasureCatalog.HoursSource, "fortnite.bot")}.</li>"));
+            $"<li><b>Cada cofre es independiente.</b> Una pantalla de carga es {OneIn(Odds(TreasureCatalog.LoadingScreen).OneIn)} en cada cofre, sin importar cuántos hayas abierto.</li><li><b>Probabilidad de tenerlo</b> = 1 − (1 − 1/X)<sup>cofres</sup>. Se acerca al 100 % sin llegar nunca.</li><li><b>Semanal</b>: estos tesoros cambian cada domingo y un cofre solo da el de su semana, así que solo cuentan los cofres de esta semana.</li><li><b>Temporada</b>: el acceso a la tienda pirata y los artilugios cuentan todos los cofres desde el inicio de la búsqueda, incluidos los añadidos a mano. Esos no tienen fecha: solo cuentan para una semana si marcaste «Abiertos esta semana».</li><li><b>Horas del tesoro</b>: algunas probabilidades se multiplican (por ejemplo ×10 para los vehículos).{hoursText} Los cofres abiertos durante una de ellas cuentan con la probabilidad aumentada ({N(boosted)} de los tuyos).</li><li><b>Esperado</b>: cuántos tendrías de media con esos cofres. <b>A tu ritmo</b>: la misma probabilidad al final de la semana (o de la búsqueda) si sigues abriendo tantos cofres al día.</li><li>Probabilidades publicadas por {Link(TreasureCatalog.OddsSource, "Epic Games (Fortnite Status)")}, horarios de las horas del tesoro según {Link(TreasureCatalog.HoursSource, "fortnite.bot")}.</li>", $"<li><b>Каждый сундук независим.</b> Экран загрузки выпадает с шансом {OneIn(Odds(TreasureCatalog.LoadingScreen).OneIn)} из каждого сундука, сколько бы ты их ни открыл.</li><li><b>Шанс, что он у тебя есть</b> = 1 − (1 − 1/X)<sup>сундуки</sup>. Он приближается к 100%, но никогда его не достигает.</li><li><b>Еженедельные</b> сокровища меняются каждое воскресенье, и сундук даёт только сокровище этой недели, поэтому считаются только сундуки этой недели.</li><li><b>Сезонные</b> сокровища (доступ в пиратскую лавку, гаджеты) учитывают все сундуки с начала охоты, включая добавленные вручную. У них нет даты, поэтому они идут в счёт недели, только если ты отметил «Открыты на этой неделе».</li><li><b>Часы сокровищ</b> повышают некоторые шансы (например, ×10 для транспорта).{hoursText} Сундуки, открытые во время них, считаются с повышенными шансами (у тебя таких {N(boosted)}).</li><li><b>Ожидается</b> — сколько ты получил бы в среднем с этими сундуками. <b>В твоём темпе</b> — тот же шанс к концу недели (или охоты), если продолжишь открывать столько же сундуков в день.</li><li>Шансы опубликованы {Link(TreasureCatalog.OddsSource, "Epic Games (Fortnite Status)")}, время часов сокровищ — с {Link(TreasureCatalog.HoursSource, "fortnite.bot")}.</li>"));
         sb.Append($"</ul></details>{FoldEnd}");
         return sb.ToString();
     }
@@ -915,12 +915,12 @@ public static class ReportWriter
     /// <summary>A word for a chance, and its color class.</summary>
     private static (string Cls, string Text) Verdict(double p) => (p * 100) switch
     {
-        >= 99.95 => ("certain", L.T("Presque sûr", "Almost certain", "Casi seguro")),
-        >= 95 => ("vlikely", L.T("Très probable", "Very likely", "Muy probable")),
-        >= 75 => ("likely", L.T("Probable", "Likely", "Probable")),
-        >= 25 => ("possible", L.T("Peut-être", "Maybe", "Quizás")),
-        >= 5 => ("unlikely", L.T("Peu probable", "Unlikely", "Poco probable")),
-        _ => ("vunlikely", L.T("Très peu probable", "Very unlikely", "Muy poco probable")),
+        >= 99.95 => ("certain", L.T("Presque sûr", "Almost certain", "Casi seguro", "Почти наверняка")),
+        >= 95 => ("vlikely", L.T("Très probable", "Very likely", "Muy probable", "Очень вероятно")),
+        >= 75 => ("likely", L.T("Probable", "Likely", "Probable", "Вероятно")),
+        >= 25 => ("possible", L.T("Peut-être", "Maybe", "Quizás", "Возможно")),
+        >= 5 => ("unlikely", L.T("Peu probable", "Unlikely", "Poco probable", "Маловероятно")),
+        _ => ("vunlikely", L.T("Très peu probable", "Very unlikely", "Muy poco probable", "Очень маловероятно")),
     };
 
     /// <summary>How many on average ("≈ 4.3", "&lt; 0.1").</summary>
@@ -940,9 +940,9 @@ public static class ReportWriter
         var shown = L.Shown(utc);
         var text = format switch
         {
-            "date" => shown.ToString(L.T("d MMMM", "MMMM d", "d 'de' MMMM"), Fr),
+            "date" => shown.ToString(L.T("d MMMM", "MMMM d", "d 'de' MMMM", "d MMMM"), Fr),
             "weekdayTime" => shown.ToString("dddd ", Fr) + L.Clock(shown),
-            _ => shown.ToString(L.T("dddd d MMM, ", "dddd, MMM d, ", "dddd d MMM, "), Fr) + L.Clock(shown),
+            _ => shown.ToString(L.T("dddd d MMM, ", "dddd, MMM d, ", "dddd d MMM, ", "dddd, d MMM, "), Fr) + L.Clock(shown),
         };
         var local = utc.ToLocalTime();
         var tip = $"{local.ToString("D", Fr)}, {local.ToString(L.TimePattern(), Fr)} ({L.LocalOffset}) · {utc.ToString("D", Fr)}, {utc.ToString(L.TimePattern(), Fr)} UTC";
@@ -986,7 +986,7 @@ public static class ReportWriter
             return text;
         }
         var x = OneInHuge(c.LogNever);
-        var never = L.T($"ne pas l'avoir eu : 1 chance sur {x}", $"never had it: 1 chance in {x}", $"no haberlo conseguido: 1 entre {x}");
+        var never = L.T($"ne pas l'avoir eu : 1 chance sur {x}", $"never had it: 1 chance in {x}", $"no haberlo conseguido: 1 entre {x}", $"ещё не выпадало: 1 шанс из {x}");
         return $"<span title=\"{H(never)}\">{text}</span>";
     }
 
@@ -1023,23 +1023,23 @@ public static class ReportWriter
             var saved = !auto && ticked.Contains(p.Id);
             var src = TreasureImages.Src(p.Image);
             var img = src != null ? $"""<img src="{H(src)}" alt="" loading="lazy" onerror="this.remove()">""" : "";
-            return $"""<label class="prize{(auto ? " got" : "")}"><input type="checkbox" data-prize="{p.Id}"{(auto ? $" checked data-auto=\"1\" onclick=\"return false\" title=\"{H(L.T("Coché tout seul : vu dans tes replays", "Ticked by itself: seen in your replays", "Marcado solo: visto en tus repeticiones"))}\"" : saved ? " checked data-saved=\"1\"" : "")}><span class="pimg">{img}</span><span class="pn">{H(p.Name)}</span><span class="pk">{H(TreasureCatalog.KindName(p.Kind))}{(auto ? " · " + L.T("vu dans tes replays", "seen in your replays", "visto en tus repeticiones") : "")}</span></label>""";
+            return $"""<label class="prize{(auto ? " got" : "")}"><input type="checkbox" data-prize="{p.Id}"{(auto ? $" checked data-auto=\"1\" onclick=\"return false\" title=\"{H(L.T("Coché tout seul : vu dans tes replays", "Ticked by itself: seen in your replays", "Marcado solo: visto en tus repeticiones", "Отмечено автоматически: замечено в твоих повторах"))}\"" : saved ? " checked data-saved=\"1\"" : "")}><span class="pimg">{img}</span><span class="pn">{H(p.Name)}</span><span class="pk">{H(TreasureCatalog.KindName(p.Kind))}{(auto ? " · " + L.T("vu dans tes replays", "seen in your replays", "visto en tus repeticiones", "замечено в твоих повторах") : "")}</span></label>""";
         }
         var collectionInfo = L.T(
             "Coche ce que tu as déjà obtenu : c'est enregistré dans ce navigateur seulement. Un trésor sorti d'un coffre doré est coché tout seul quand le compteur le reconnaît. À part les gizmos, on ne peut pas obtenir deux fois le même trésor. Images : fortnite.bot, téléchargées une seule fois par le compteur et gardées dans son dossier de données.",
             "Tick what you already obtained: it is saved in this browser only. A treasure from a golden chest is ticked by itself when the counter recognizes it. Apart from gizmos, the same treasure cannot be obtained twice. Images: fortnite.bot, downloaded once by the counter and kept in its data folder.",
-            "Marca lo que ya has conseguido: se guarda solo en este navegador. Un tesoro de un cofre dorado se marca solo cuando el contador lo reconoce. Salvo los artilugios, no se puede conseguir dos veces el mismo tesoro. Imágenes: fortnite.bot, descargadas una sola vez por el contador y guardadas en su carpeta de datos.");
-        sb.Append(FoldStart("collection", $"{L.T("Ta collection", "Your collection", "Tu colección")} · <span class=\"num\" id=\"colcount\"></span>", open: false, Info(collectionInfo)));
+            "Marca lo que ya has conseguido: se guarda solo en este navegador. Un tesoro de un cofre dorado se marca solo cuando el contador lo reconoce. Salvo los artilugios, no se puede conseguir dos veces el mismo tesoro. Imágenes: fortnite.bot, descargadas una sola vez por el contador y guardadas en su carpeta de datos.", "Отметь то, что уже получил: это сохраняется только в этом браузере. Сокровище из золотого сундука отмечается само, когда счётчик его распознаёт. Кроме гаджетов, одно и то же сокровище нельзя получить дважды. Изображения: fortnite.bot, загружены счётчиком один раз и хранятся в его папке данных.");
+        sb.Append(FoldStart("collection", $"{L.T("Ta collection", "Your collection", "Tu colección", "Твоя коллекция")} · <span class=\"num\" id=\"colcount\"></span>", open: false, Info(collectionInfo)));
         sb.Append("<div class=\"card collection\">");
-        sb.Append($"<div class=\"wk\"><div class=\"wt\">{L.T("Toute la saison", "All season", "Toda la temporada")}</div><div class=\"prizes\">{Prize(TreasureCatalog.PirateShopAccess)}</div></div>");
+        sb.Append($"<div class=\"wk\"><div class=\"wt\">{L.T("Toute la saison", "All season", "Toda la temporada", "Весь сезон")}</div><div class=\"prizes\">{Prize(TreasureCatalog.PirateShopAccess)}</div></div>");
         foreach (var week in TreasureCatalog.Weeks)
         {
             var current = now >= week.From && now < week.To;
             var dates = $"{ShortWhen(week.From)} – {ShortWhen(week.To)}";
-            sb.Append($"<div class=\"wk{(current ? " now" : "")}\"><div class=\"wt\">{L.T("Semaine", "Week", "Semana")} {week.Number} · {H(week.Title)} <span class=\"items\">{dates}{(current ? " · " + L.T("cette semaine", "this week", "esta semana") : "")}</span></div>");
+            sb.Append($"<div class=\"wk{(current ? " now" : "")}\"><div class=\"wt\">{L.T("Semaine", "Week", "Semana", "Неделя")} {week.Number} · {H(week.Title)} <span class=\"items\">{dates}{(current ? " · " + L.T("cette semaine", "this week", "esta semana", "на этой неделе") : "")}</span></div>");
             sb.Append(week.Prizes.Count > 0
                 ? $"<div class=\"prizes\">{string.Concat(week.Prizes.Select(Prize))}</div></div>"
-                : $"<div class=\"items\" style=\"padding:4px 0 8px\">{L.T("Récompenses pas encore dévoilées : elles arriveront avec une mise à jour du compteur.", "Prizes not revealed yet: they will come with an update of the counter.", "Recompensas aún no reveladas: llegarán con una actualización del contador.")}</div></div>");
+                : $"<div class=\"items\" style=\"padding:4px 0 8px\">{L.T("Récompenses pas encore dévoilées : elles arriveront avec une mise à jour du compteur.", "Prizes not revealed yet: they will come with an update of the counter.", "Recompensas aún no reveladas: llegarán con una actualización del contador.", "Призы ещё не раскрыты: они появятся с обновлением счётчика.")}</div></div>");
         }
         sb.Append("</div>").Append(FoldEnd);
         return sb.ToString();
@@ -1069,17 +1069,17 @@ public static class ReportWriter
         };
         var text = new
         {
-            live = L.T("Heure du trésor en cours, jusqu'à {0}", "Treasure Hour live now, until {0}", "Hora del tesoro en curso, hasta las {0}"),
-            next = L.T("Prochaine heure du trésor : {0}", "Next Treasure Hour: {0}", "Próxima hora del tesoro: {0}"),
-            endsIn = L.T("se termine dans {0}", "ends in {0}", "termina en {0}"),
-            startsIn = L.T("dans {0}", "in {0}", "en {0}"),
-            expected = L.T("prévue, pas encore annoncée", "expected, not announced yet", "prevista, aún no anunciada"),
-            perChest = L.T("1 sur {0} par coffre", "1 in {0} per chest", "1 entre {0} por cofre"),
-            oneIn = L.T("1 sur {0}", "1 in {0}", "1 entre {0}"),
-            boostPerChest = L.T("1 sur {0} à chaque coffre pendant l'heure du trésor", "1 in {0} per chest during the Treasure Hour", "1 entre {0} por cofre durante la hora del tesoro"),
-            boostHalf = L.T(" · une chance sur deux dans {0} coffres de plus à ce rythme", " · one chance in two within {0} more chests at this rate", " · una de cada dos en {0} cofres más a este ritmo"),
-            units = L.T("j h min s", "d h m s", "d h m s").Split(' '),
-            now = L.T("maintenant", "now", "ahora"),
+            live = L.T("Heure du trésor en cours, jusqu'à {0}", "Treasure Hour live now, until {0}", "Hora del tesoro en curso, hasta las {0}", "Час сокровищ идёт сейчас, до {0}"),
+            next = L.T("Prochaine heure du trésor : {0}", "Next Treasure Hour: {0}", "Próxima hora del tesoro: {0}", "Следующий час сокровищ: {0}"),
+            endsIn = L.T("se termine dans {0}", "ends in {0}", "termina en {0}", "закончится через {0}"),
+            startsIn = L.T("dans {0}", "in {0}", "en {0}", "через {0}"),
+            expected = L.T("prévue, pas encore annoncée", "expected, not announced yet", "prevista, aún no anunciada", "ожидается, ещё не объявлен"),
+            perChest = L.T("1 sur {0} par coffre", "1 in {0} per chest", "1 entre {0} por cofre", "1 из {0} за сундук"),
+            oneIn = L.T("1 sur {0}", "1 in {0}", "1 entre {0}", "1 из {0}"),
+            boostPerChest = L.T("1 sur {0} à chaque coffre pendant l'heure du trésor", "1 in {0} per chest during the Treasure Hour", "1 entre {0} por cofre durante la hora del tesoro", "1 из {0} за сундук во время часа сокровищ"),
+            boostHalf = L.T(" · une chance sur deux dans {0} coffres de plus à ce rythme", " · one chance in two within {0} more chests at this rate", " · una de cada dos en {0} cofres más a este ritmo", " · шанс один к двум ещё за {0} сундуков в этом темпе"),
+            units = L.T("j h min s", "d h m s", "d h m s", "д ч мин с").Split(' '),
+            now = L.T("maintenant", "now", "ahora", "сейчас"),
             locale = L.Culture.Name,
         };
         // Time settings: UTC or local time, 12- or 24-hour clock (the same as the times written by the counter).
@@ -1150,17 +1150,17 @@ public static class ReportWriter
         var info = L.T(
             "Un coffre doré est envoyé à tous les joueurs à environ 150 m, avec le trésor et le joueur qui l'a ouvert : ces trésors-là ont été vus dans tes replays. Un joueur plus loin de toi n'y figure pas.",
             "A golden chest is sent to every player within about 150 m, with the treasure and the player who opened it: these were seen in your replays. A player farther away from you is not in them.",
-            "Un cofre dorado se envía a todos los jugadores a unos 150 m, con el tesoro y el jugador que lo abrió: estos se vieron en tus repeticiones. Un jugador más lejos de ti no aparece.");
+            "Un cofre dorado se envía a todos los jugadores a unos 150 m, con el tesoro y el jugador que lo abrió: estos se vieron en tus repeticiones. Un jugador más lejos de ti no aparece.", "Золотой сундук отправляется всем игрокам примерно в пределах 150 м — с сокровищем и игроком, который его открыл: эти были замечены в твоих повторах. Игроков дальше от тебя там нет.");
         var sb = new StringBuilder();
-        sb.Append(FoldStart("seen", $"{L.T("Ils l'ont eu dans tes parties", "They got it in your matches", "Lo consiguieron en tus partidas")} · <span class=\"num\">{rows.Count}</span>", open: false,
-            $" <span class=\"exper\">{L.T("expérimental", "experimental", "experimental")}</span>{Info(info)}"));
+        sb.Append(FoldStart("seen", $"{L.T("Ils l'ont eu dans tes parties", "They got it in your matches", "Lo consiguieron en tus partidas", "Получили в твоих матчах")} · <span class=\"num\">{rows.Count}</span>", open: false,
+            $" <span class=\"exper\">{L.T("expérimental", "experimental", "experimental", "экспериментально")}</span>{Info(info)}"));
         sb.Append("<div class=\"card\">");
         if (rows.Count == 0)
         {
-            sb.Append($"<p class=\"items\" style=\"margin:8px 0\">{L.T("Aucun pour l'instant : quand un joueur à moins de 150 m de toi décroche l'accès à la boutique pirate ou une tenue en or, il apparaît ici avec la partie, son pseudo et le moment.", "None yet: when a player within 150 m of you gets the Pirate Shop Access or a gold outfit, they show up here with the match, their name and the moment.", "Ninguno por ahora: cuando un jugador a menos de 150 m de ti consigue el acceso a la tienda pirata o un traje de oro, aparece aquí con la partida, su nombre y el momento.")}</p></div>{FoldEnd}");
+            sb.Append($"<p class=\"items\" style=\"margin:8px 0\">{L.T("Aucun pour l'instant : quand un joueur à moins de 150 m de toi décroche l'accès à la boutique pirate ou une tenue en or, il apparaît ici avec la partie, son pseudo et le moment.", "None yet: when a player within 150 m of you gets the Pirate Shop Access or a gold outfit, they show up here with the match, their name and the moment.", "Ninguno por ahora: cuando un jugador a menos de 150 m de ti consigue el acceso a la tienda pirata o un traje de oro, aparece aquí con la partida, su nombre y el momento.", "Пока никого: когда игрок в пределах 150 м от тебя получит доступ в пиратскую лавку или золотой облик, он появится здесь с матчем, своим именем и моментом.")}</p></div>{FoldEnd}");
             return sb.ToString();
         }
-        sb.Append($"<table id=\"t-seen\"><tr><th>{L.T("Partie", "Match", "Partida")}</th><th>{L.T("Joueur", "Player", "Jugador")}</th><th>{L.T("Trésor", "Treasure", "Tesoro")}</th><th>{L.T("Moment", "Time", "Momento")}</th></tr>");
+        sb.Append($"<table id=\"t-seen\"><tr><th>{L.T("Partie", "Match", "Partida", "Матч")}</th><th>{L.T("Joueur", "Player", "Jugador", "Игрок")}</th><th>{L.T("Trésor", "Treasure", "Tesoro", "Сокровище")}</th><th>{L.T("Moment", "Time", "Momento", "Время")}</th></tr>");
         foreach (var (m, s, prize) in rows)
         {
             var name = prize!.Kind == TreasureCatalog.PirateShop ? TreasureCatalog.KindName(prize.Kind) : prize.Name;
@@ -1178,7 +1178,7 @@ public static class ReportWriter
             var text = L.T(
                 "Pourquoi ce nombre est bas ? Il vient de TES replays. Fortnite n'y enregistre que ce qui se passe à environ 150 m autour de toi : un coffre ouvert par un coéquipier plus loin n'y figure pas et ne peut pas être compté. Rien non plus après ton départ de la partie (élimination puis retour au salon). Plus vous lootez ensemble, plus le nombre est juste. Les coffres comptés, eux, le sont avec les mêmes règles que les tiens.",
                 "Why is this number low? It comes from YOUR replays. Fortnite only records what happens within about 150 m of you: a chest a teammate opens farther away is not in it and cannot be counted. Nothing either once you leave the match (eliminated, back to the lobby). The more you loot together, the closer it gets. The chests that are counted are counted with the same rules as yours.",
-                "¿Por qué este número es bajo? Viene de TUS repeticiones. Fortnite solo graba lo que pasa a unos 150 m a tu alrededor: un cofre que un compañero abre más lejos no está en ella y no se puede contar. Tampoco nada después de que salgas de la partida (eliminado, de vuelta al lobby). Cuanto más looteéis juntos, más exacto es. Los cofres contados se cuentan con las mismas reglas que los tuyos.");
+                "¿Por qué este número es bajo? Viene de TUS repeticiones. Fortnite solo graba lo que pasa a unos 150 m a tu alrededor: un cofre que un compañero abre más lejos no está en ella y no se puede contar. Tampoco nada después de que salgas de la partida (eliminado, de vuelta al lobby). Cuanto más looteéis juntos, más exacto es. Los cofres contados se cuentan con las mismas reglas que los tuyos.", "Почему это число маленькое? Оно берётся из ТВОИХ повторов. Fortnite записывает только то, что происходит примерно в 150 м от тебя: сундук, который тиммейт открыл дальше, туда не попадает и не может быть засчитан. И ничего — после твоего выхода из матча (выбыл, вернулся в лобби). Чем больше вы лутаетесь вместе, тем ближе число к реальному. Засчитанные сундуки считаются по тем же правилам, что и твои.");
             return $"""<span class="info" tabindex="0" role="note" aria-label="{H(text)}">i<span class="infotip">{H(text)}</span></span>""";
         }
     }
@@ -1186,11 +1186,11 @@ public static class ReportWriter
     private static string VehicleWarning => L.T(
         "Fortnite n'a pas enregistré ce que ton véhicule a détruit dans ce replay : du butin de coffres a été vu le long de ton trajet sans aucun coffre enregistré, ces coffres ne peuvent pas être comptés. Désactive « Enregistrer des rediffusions de haute qualité » dans Fortnite (Paramètres → Jeu → Rediffusions) puis relance le jeu.",
         "Fortnite did not record what your vehicle destroyed in this replay: chest loot was seen along your drive with no chest recorded, so those chests cannot be counted. Turn off \"Record High Quality Replays\" in Fortnite (Settings → Game → Replays), then restart the game.",
-        "Fortnite no grabó lo que destruyó tu vehículo en esta repetición: se vio botín de cofres a lo largo de tu trayecto sin ningún cofre grabado, así que esos cofres no se pueden contar. Desactiva «Grabar repeticiones de alta calidad» en Fortnite (Ajustes → Juego → Repeticiones) y reinicia el juego.");
+        "Fortnite no grabó lo que destruyó tu vehículo en esta repetición: se vio botín de cofres a lo largo de tu trayecto sin ningún cofre grabado, así que esos cofres no se pueden contar. Desactiva «Grabar repeticiones de alta calidad» en Fortnite (Ajustes → Juego → Repeticiones) y reinicia el juego.", "Fortnite не записал в этом повторе, что разрушил твой транспорт: вдоль твоего пути видна добыча из сундуков без записанного сундука, поэтому эти сундуки нельзя засчитать. Выключи «Запись повторов высокого качества» в Fortnite (Настройки → Игра → Повторы), затем перезапусти игру.");
 
     /// <summary>Messages of content.json for these days (text only, escaped).</summary>
     private static string NoticeCards() => string.Concat(TreasureCatalog.ActiveNotices(DateTime.UtcNow)
-        .Select(n => $"<div class=\"notice{(n.Level == "warning" ? " warning" : "")}\">{(n.TitleIn(L.Code) is { Length: > 0 } title ? $"<b>{H(title)}</b><br>" : "")}{H(n.TextIn(L.Code))}{(n.Link != null ? $"<br><a href=\"{H(n.Link)}\" target=\"_blank\" rel=\"noopener\">{L.T("En savoir plus", "More info", "Más información")}</a>" : "")}</div>"));
+        .Select(n => $"<div class=\"notice{(n.Level == "warning" ? " warning" : "")}\">{(n.TitleIn(L.Code) is { Length: > 0 } title ? $"<b>{H(title)}</b><br>" : "")}{H(n.TextIn(L.Code))}{(n.Link != null ? $"<br><a href=\"{H(n.Link)}\" target=\"_blank\" rel=\"noopener\">{L.T("En savoir plus", "More info", "Más información", "Подробнее")}</a>" : "")}</div>"));
 
     private static string LoadingCard(ScanProgress? p)
     {
@@ -1202,7 +1202,7 @@ public static class ReportWriter
         return L.T(
             $"""<div class="loading"><div class="spin"></div><div class="grow"><b>Analyse de tes replays… {p.Done} / {p.Total}</b><div class="pbar"><i style="width:{pct}%"></i></div><span class="muted">Cette page se met à jour toute seule : les chiffres ci-dessous augmentent au fil de la lecture des replays.</span></div></div>""",
             $"""<div class="loading"><div class="spin"></div><div class="grow"><b>Analyzing your replays… {p.Done} / {p.Total}</b><div class="pbar"><i style="width:{pct}%"></i></div><span class="muted">This page updates by itself: the numbers below grow as the replays are read.</span></div></div>""",
-            $"""<div class="loading"><div class="spin"></div><div class="grow"><b>Analizando tus repeticiones… {p.Done} / {p.Total}</b><div class="pbar"><i style="width:{pct}%"></i></div><span class="muted">Esta página se actualiza sola: las cifras de abajo aumentan a medida que se leen las repeticiones.</span></div></div>""");
+            $"""<div class="loading"><div class="spin"></div><div class="grow"><b>Analizando tus repeticiones… {p.Done} / {p.Total}</b><div class="pbar"><i style="width:{pct}%"></i></div><span class="muted">Esta página se actualiza sola: las cifras de abajo aumentan a medida que se leen las repeticiones.</span></div></div>""", $"""<div class="loading"><div class="spin"></div><div class="grow"><b>Анализ твоих повторов… {p.Done} / {p.Total}</b><div class="pbar"><i style="width:{pct}%"></i></div><span class="muted">Эта страница обновляется сама: числа ниже растут по мере чтения повторов.</span></div></div>""");
     }
 
     private static string ProfilesLine(IReadOnlyList<Profile> profiles, string player)
@@ -1212,7 +1212,7 @@ public static class ReportWriter
         {
             return "";
         }
-        return $"""<div class="profiles muted">{L.T("Autres profils sur ce PC : ", "Other profiles on this PC: ", "Otros perfiles en este PC: ")}{string.Join(", ", others)} · {L.T("« Changer de profil » dans le compteur", "\"Switch profile\" in the counter", "«Cambiar de perfil» en el contador")}</div>""";
+        return $"""<div class="profiles muted">{L.T("Autres profils sur ce PC : ", "Other profiles on this PC: ", "Otros perfiles en este PC: ", "Другие профили на этом ПК: ")}{string.Join(", ", others)} · {L.T("« Changer de profil » dans le compteur", "\"Switch profile\" in the counter", "«Cambiar de perfil» en el contador", "«Сменить профиль» в счётчике")}</div>""";
     }
 
     /// <summary>Style of the OBS page: the one chosen for the overlay ("hud" or "classic").</summary>
@@ -1244,13 +1244,13 @@ public static class ReportWriter
     private static string OverlayHud(OverlayView v)
     {
         // The last finished match stays during the next one; the red dot next to the total says a match is in progress.
-        var state = Row(L.T("Dernière", "Last", "Última"), v.Last ?? "—", "");
+        var state = Row(L.T("Dernière", "Last", "Última", "Последний"), v.Last ?? "—", "");
         var squad = v.Squad != null ? Row(OverlayModel.SquadLabel, v.Squad, "") : "";
         static string Row(string label, string value, string cls) =>
             $"<div class=\"r {cls}\"><span>{H(label)}</span>{(value.Length > 0 ? $"<span class=\"sep\">•</span><b>{H(value)}</b>" : "")}</div>";
         return $$"""
             <!doctype html><html lang="{{L.Code}}"><head><meta charset="utf-8"><meta http-equiv="refresh" content="5">
-            <title>{{L.T("Overlay coffres", "Chest overlay", "Overlay de cofres")}}</title>
+            <title>{{L.T("Overlay coffres", "Chest overlay", "Overlay de cofres", "Оверлей сундуков")}}</title>
             <style>
             html,body{margin:0;background:transparent}
             body{padding:10px 14px;display:inline-block;color:#fff;font-family:Bahnschrift,"Segoe UI",sans-serif;font-style:italic;font-weight:600;text-align:right;
@@ -1266,7 +1266,7 @@ public static class ReportWriter
             </style></head><body>
             <div class="total{{(v.CurrentLive && v.Current is { } c && c != "…" ? " live" : "")}}">{{(v.CurrentLive ? "<i class=\"dot\"></i>" : "")}}<svg viewBox="0 0 30 26" aria-hidden="true"><rect x="2" y="10" width="26" height="14" rx="2" fill="#ffd23f" stroke="#0b0f18" stroke-width="2.5"/><path d="M2 12 Q15 -2 28 12" fill="#e0a526" stroke="#0b0f18" stroke-width="2.5"/><rect x="12.5" y="12" width="5" height="6" rx="1" fill="#0b0f18"/></svg>{{H(v.Total)}}</div>
             {{state}}
-            {{Row(L.T("Session", "Session", "Sesión"), v.Session, "")}}
+            {{Row(L.T("Session", "Session", "Sesión", "Сессия"), v.Session, "")}}
             {{squad}}
             <div class="r t"><span class="star">★</span><b>{{H(v.Treasures)}}</b></div>
             </body></html>
@@ -1283,7 +1283,7 @@ public static class ReportWriter
         }
         return $$"""
             <!doctype html><html lang="{{L.Code}}"><head><meta charset="utf-8"><meta http-equiv="refresh" content="5">
-            <title>{{L.T("Overlay coffres", "Chest overlay", "Overlay de cofres")}}</title>
+            <title>{{L.T("Overlay coffres", "Chest overlay", "Overlay de cofres", "Оверлей сундуков")}}</title>
             <style>
             html,body{margin:0;background:transparent;color:#e2e2e8;font:500 16px/1.3 "Segoe UI",system-ui,sans-serif}
             .box{display:inline-block;min-width:260px;padding:14px 18px 12px;border-radius:16px;background:rgba(18,18,22,.86);border:1px solid #3a3a42;text-shadow:0 1px 3px rgba(0,0,0,.6)}
@@ -1299,7 +1299,7 @@ public static class ReportWriter
             .row{display:contents}.row span{font-size:13px;font-weight:600;color:#82828e}.row b{font-weight:500}
             .row.t b{color:#c4a0ff}.row small{font-size:11px;font-weight:600;color:#82828e}
             </style></head><body><div class="box">
-            <div class="head"><span>{{L.T("COFFRES", "CHESTS", "COFRES")}}</span>{{(v.Badge != null ? $"<span class=\"live\">{H(v.Badge)}</span>" : "")}}</div>
+            <div class="head"><span>{{L.T("COFFRES", "CHESTS", "COFRES", "СУНДУКИ")}}</span>{{(v.Badge != null ? $"<span class=\"live\">{H(v.Badge)}</span>" : "")}}</div>
             <div class="counters">
               <div><span class="big total">{{H(v.Total)}}</span><span class="cap">total</span></div>
               <div class="sep"></div>
@@ -1313,7 +1313,7 @@ public static class ReportWriter
     public static string Csv(TrackerData data)
     {
         var sb = new StringBuilder();
-        sb.AppendLine(L.T("date;mode;joueur;place;joueurs;coffres;coffres_coequipiers;caisses_munitions;tresors;fichier", "date;mode;player;placement;players;chests;teammate_chests;ammo_boxes;treasures;file", "fecha;modo;jugador;puesto;jugadores;cofres;cofres_companeros;cajas_municion;tesoros;archivo"));
+        sb.AppendLine(L.T("date;mode;joueur;place;joueurs;coffres;coffres_coequipiers;caisses_munitions;tresors;fichier", "date;mode;player;placement;players;chests;teammate_chests;ammo_boxes;treasures;file", "fecha;modo;jugador;puesto;jugadores;cofres;cofres_companeros;cajas_municion;tesoros;archivo", "date;mode;player;placement;players;chests;teammate_chests;ammo_boxes;treasures;file"));
 
         foreach (var m in Profiles.Counted(data).OrderBy(When))
         {

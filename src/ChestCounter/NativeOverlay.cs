@@ -28,7 +28,7 @@ public static class NativeOverlay
     private static int _headerH, _bigH, _captionH, _rowH, _col1W, _col2W, _labelW;
     private static IntPtr _fontHeader, _fontCaption, _fontLabel;
     private static IntPtr _brushBorder, _brushLine;
-    private static string Header => L.T("COFFRES", "CHESTS", "COFRES");
+    private static string Header => L.T("COFFRES", "CHESTS", "COFRES", "СУНДУКИ");
     private const string CaptionTotal = "total";
     private static Action<int, int>? _onMoved;
     private static Action<bool>? _onLockChanged;
@@ -131,7 +131,7 @@ public static class NativeOverlay
             }
             catch (Exception ex)
             {
-                Console.WriteLine(L.T($"Overlay indisponible : {ex.Message}", $"Overlay unavailable: {ex.Message}", $"Overlay no disponible: {ex.Message}"));
+                Console.WriteLine(L.T($"Overlay indisponible : {ex.Message}", $"Overlay unavailable: {ex.Message}", $"Overlay no disponible: {ex.Message}", $"Оверлей недоступен: {ex.Message}"));
                 ready.Set();
             }
             finally
@@ -239,7 +239,7 @@ public static class NativeOverlay
         _hwnd = CreateWindowExW(
             // Opaque (no WS_EX_LAYERED alpha): nothing for the compositor to blend every frame.
             WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE,
-            wc.lpszClassName, L.T("Coffres", "Chests", "Cofres"), WS_POPUP,
+            wc.lpszClassName, L.T("Coffres", "Chests", "Cofres", "Сундуки"), WS_POPUP,
 
             posX, posY, w, h, IntPtr.Zero, IntPtr.Zero, hInstance, IntPtr.Zero);
         if (_hwnd == IntPtr.Zero)
@@ -401,10 +401,10 @@ public static class NativeOverlay
             Console.WriteLine(locked
                 ? L.T($"Overlay verrouillé : la souris passe au travers. {(LockHotkeyRegistered ? "Ctrl+Maj+L" : "« Déverrouiller l'overlay » dans le compteur")} pour le déverrouiller.",
                       $"Overlay locked: the mouse goes through it. {(LockHotkeyRegistered ? "Ctrl+Shift+L" : "\"Unlock the overlay\" in the counter")} to unlock it.",
-                      $"Overlay bloqueado: el ratón lo atraviesa. {(LockHotkeyRegistered ? "Ctrl+Mayús+L" : "«Desbloquear el overlay» en el contador")} para desbloquearlo.")
+                      $"Overlay bloqueado: el ratón lo atraviesa. {(LockHotkeyRegistered ? "Ctrl+Mayús+L" : "«Desbloquear el overlay» en el contador")} para desbloquearlo.", $"Оверлей закреплён: мышь проходит сквозь него. {(LockHotkeyRegistered ? "Ctrl+Shift+L" : "«Открепить оверлей» в счётчике")} — чтобы открепить.")
                 : L.T("Overlay déverrouillé : clic gauche maintenu pour le déplacer, cadenas pour le reverrouiller.",
                       "Overlay unlocked: hold the left mouse button to move it, click the padlock to lock it again.",
-                      "Overlay desbloqueado: arrástralo con el clic izquierdo; el candado lo vuelve a bloquear."));
+                      "Overlay desbloqueado: arrástralo con el clic izquierdo; el candado lo vuelve a bloquear.", "Оверлей откреплён: зажми левую кнопку мыши, чтобы двигать его, нажми на замок, чтобы закрепить снова."));
         }
     }
 
@@ -419,8 +419,8 @@ public static class NativeOverlay
         {
             ShowWindow(hwnd, SW_HIDE);
             Console.WriteLine(HotkeyRegistered
-                ? L.T("Overlay masqué : Ctrl+Maj+O (n'importe où) pour le réafficher.", "Overlay hidden: Ctrl+Shift+O (anywhere) to show it again.", "Overlay oculto: Ctrl+Mayús+O (desde cualquier sitio) para volver a mostrarlo.")
-                : L.T("Overlay masqué : « Afficher l'overlay » dans le compteur pour le réafficher.", "Overlay hidden: \"Show the overlay\" in the counter to show it again.", "Overlay oculto: «Mostrar el overlay» en el contador para volver a mostrarlo."));
+                ? L.T("Overlay masqué : Ctrl+Maj+O (n'importe où) pour le réafficher.", "Overlay hidden: Ctrl+Shift+O (anywhere) to show it again.", "Overlay oculto: Ctrl+Mayús+O (desde cualquier sitio) para volver a mostrarlo.", "Оверлей скрыт: Ctrl+Shift+O (где угодно), чтобы показать снова.")
+                : L.T("Overlay masqué : « Afficher l'overlay » dans le compteur pour le réafficher.", "Overlay hidden: \"Show the overlay\" in the counter to show it again.", "Overlay oculto: «Mostrar el overlay» en el contador para volver a mostrarlo.", "Оверлей скрыт: «Показать оверлей» в счётчике, чтобы показать снова."));
         }
     }
 
@@ -605,7 +605,7 @@ public static class NativeOverlay
 
     private sealed record HudRow(string Label, string Value);
 
-    private static HudRow StateRow(OverlayView v) => new(L.T("Dernière", "Last", "Última"), v.Last ?? "—");
+    private static HudRow StateRow(OverlayView v) => new(L.T("Dernière", "Last", "Última", "Последний"), v.Last ?? "—");
 
     /// <summary>The figures of the match in progress are readable (its chests are already in the total).</summary>
     private static bool LiveFigures(OverlayView v) => v.CurrentLive && v.Current is { } cur && cur != "…";
@@ -625,7 +625,7 @@ public static class NativeOverlay
             var lockW = Sc(22);
             var bigW = TextWidth(hdc, _fontHudBig, v.Total, out _hudBigH);
             var state = StateRow(v);
-            var sessionLabel = L.T("Session", "Session", "Sesión");
+            var sessionLabel = L.T("Session", "Session", "Sesión", "Сессия");
             var rowsW = new[]
             {
                 TextWidth(hdc, _fontHudSmall, state.Label + Sep + state.Value, out _hudSmallH),
@@ -816,7 +816,7 @@ public static class NativeOverlay
         var rowH = _hudSmallH;
         LabelValue(hdc, state.Label, state.Value, left, right, y, rowH, white);
         y += rowH + Sc(2);
-        LabelValue(hdc, L.T("Session", "Session", "Sesión"), v.Session, left, right, y, rowH, white);
+        LabelValue(hdc, L.T("Session", "Session", "Sesión", "Сессия"), v.Session, left, right, y, rowH, white);
         y += rowH + Sc(2);
         if (v.Squad != null)
         {

@@ -97,7 +97,7 @@ public static class TreasureCatalog
     private const string ContentFile = "content.json";
     // CHESTCOUNTER_CONTENT_URL: another address, to try a new content.json before it is pushed to main.
     private static string RemoteUrl => Environment.GetEnvironmentVariable("CHESTCOUNTER_CONTENT_URL") is { Length: > 0 } test ? test
-        : $"https://raw.githubusercontent.com/{AppInfo.Repo}/main/content/{ContentFile}";
+        : $"https://raw.githubusercontent.com/{AppInfo.UpstreamRepo}/main/content/{ContentFile}";
 
     private static string ReadEmbedded()
     {
@@ -227,7 +227,7 @@ public static class TreasureCatalog
             }).ToList() : new List<TreasureHour>();
 
             static Dictionary<string, string> Langs(System.Text.Json.JsonElement e, int max) =>
-                e.EnumerateObject().Where(t => t.Name is "fr" or "en" or "es").ToDictionary(t => t.Name, t => Text(t.Value, max));
+                e.EnumerateObject().Where(t => t.Name is "fr" or "en" or "es" or "ru").ToDictionary(t => t.Name, t => Text(t.Value, max));
             static Version? Ver(System.Text.Json.JsonElement n, string name) =>
                 n.TryGetProperty(name, out var v) ? (Version.TryParse(v.GetString(), out var x) ? x : throw new InvalidDataException(name)) : null;
             var notices = root.TryGetProperty("notices", out var nt) ? nt.EnumerateArray().Take(10).Select(n => new Notice(
@@ -280,13 +280,13 @@ public static class TreasureCatalog
 
     public static string KindName(string kind) => kind switch
     {
-        GoldOutfit => L.T("Tenue en or", "Gold Outfit", "Traje de oro"),
-        PirateShop => L.T("Accès à la boutique pirate", "Pirate Shop Access", "Acceso a la tienda pirata"),
-        VehicleDecal => L.T("Véhicule et autocollant", "Vehicle & Decal", "Vehículo y adhesivo"),
-        PickaxeOrBackBling => L.T("Pioche ou sac à dos", "Pickaxe or Back Bling", "Pico o mochila"),
-        JamTrack => L.T("Piste musicale", "Jam Track", "Pista musical"),
-        LoadingScreen => L.T("Écran de chargement", "Loading Screen", "Pantalla de carga"),
-        _ => L.T("Gizmo (n'importe lequel)", "Gizmo (any)", "Artilugio (cualquiera)"),
+        GoldOutfit => L.T("Tenue en or", "Gold Outfit", "Traje de oro", "Золотой облик"),
+        PirateShop => L.T("Accès à la boutique pirate", "Pirate Shop Access", "Acceso a la tienda pirata", "Доступ в пиратскую лавку"),
+        VehicleDecal => L.T("Véhicule et autocollant", "Vehicle & Decal", "Vehículo y adhesivo", "Транспорт и наклейка"),
+        PickaxeOrBackBling => L.T("Pioche ou sac à dos", "Pickaxe or Back Bling", "Pico o mochila", "Кирка или украшение на спину"),
+        JamTrack => L.T("Piste musicale", "Jam Track", "Pista musical", "Джем-трек"),
+        LoadingScreen => L.T("Écran de chargement", "Loading Screen", "Pantalla de carga", "Экран загрузки"),
+        _ => L.T("Gizmo (n'importe lequel)", "Gizmo (any)", "Artilugio (cualquiera)", "Гаджет (любой)"),
     };
 
     /// <summary>

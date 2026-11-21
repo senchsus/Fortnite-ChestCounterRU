@@ -14,7 +14,7 @@ public static class TreasureImages
     public static string? Folder { get; set; }
 
     /// <summary>Copy kept in the repository (same file name as the local copy).</summary>
-    private static string RepoUrl(string url) => $"https://raw.githubusercontent.com/{AppInfo.Repo}/main/assets/treasures/{LocalName(url)}";
+    private static string RepoUrl(string url) => $"https://raw.githubusercontent.com/{AppInfo.UpstreamRepo}/main/assets/treasures/{LocalName(url)}";
 
     /// <summary>File name of the local copy: the picture's name, plus its version when the address has one ("?v=3").</summary>
     public static string LocalName(string url)
